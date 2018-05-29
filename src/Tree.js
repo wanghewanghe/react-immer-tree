@@ -70,11 +70,12 @@ export default class Tree extends React.Component {
         }
       })
     }
-    // if (action === 'edit') {
-    //   new_data = produce(this.state.data, draftState => {
-    //     const current_data = index_arr.reduce((result, i, idx) => idx === index_arr.length - 1 ? result[i] : result[i].children, draftState)
-    //   })
-    // }
+    if (action === 'edit') {
+      new_data = produce(this.state.data, draftState => {
+        const current_data = index_arr.reduce((result, i, idx) => idx === index_arr.length - 1 ? result[i] : result[i].children, draftState)
+        current_data.name += 'edited'
+      })
+    }
     this.setState({
       data: new_data
     })
@@ -91,6 +92,7 @@ export default class Tree extends React.Component {
         <TreeNode data={data}
                   addNode={(key) => this.nodeAction('add', key)}
                   deleteNode={(key) => this.nodeAction('delete', key)}
+                  editNode={(key) => this.nodeAction('edit', key)}
         />
       </div>
     )
