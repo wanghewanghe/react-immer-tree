@@ -1,0 +1,121 @@
+.tree-wrap {
+  width: 80%;
+}
+.tree-node-wrap {
+  line-height: 34px;
+  list-style: none;
+
+  .tree-children {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .5s;
+  }
+
+  &.tree-node-open {
+    > .tree-node {
+      .node-control {
+        &::before {
+          transform: rotate(45deg) translateX(2px);
+          background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65));
+          transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+        &:after {
+          transform: rotate(-45deg) translateX(-2px);
+          background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65));
+          transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+      }
+    }
+    > .tree-children {
+      max-height: 999px;
+    }
+  }
+}
+
+.tree-node {
+  display: flex;
+  justify-content: space-between;
+  .node-control {
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-self: baseline;
+    width: 20px;
+    height: 33px;
+
+    transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    &:before, &:after {
+      content: '';
+      position: relative;
+      top: 1px;
+
+      width: 6px;
+      height: 1.5px;
+
+      border-radius: 2px;
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65));
+    }
+    &:before {
+      transform: rotate(-45deg) translateX(2px);
+      transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    &:after {
+      transform: rotate(45deg) translateX(-2px);
+      transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+  }
+  .node-text {
+    flex: auto;
+    position: relative;
+    .icon-menu {
+      position: absolute;
+      right: 0;
+
+      display: none;
+      cursor: pointer;
+    }
+    &.active {
+      color: deepskyblue;
+      .icon-menu {
+        display: inline;
+      }
+    }
+  }
+}
+
+.operate-menu {
+  position: absolute;
+  z-index: 100;
+
+  display: none;
+  padding: 4px 0;
+  margin: 0;
+
+  user-select: none;
+  list-style: none;
+
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  &.open {
+    display: block;
+  }
+  li {
+    padding: 5px 12px;
+    margin: 0;
+
+    font-size: 14px;
+    color: rgba(0,0,0,.65);
+    white-space: nowrap;
+    line-height: 22px;
+
+    cursor: pointer;
+    transition: all .3s;
+
+    &:hover {
+      background: #e6f7ff;
+    }
+  }
+}

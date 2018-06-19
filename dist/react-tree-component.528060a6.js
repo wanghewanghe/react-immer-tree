@@ -98,7 +98,7 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   // Override the current require with this new one
   return newRequire;
-})({9:[function(require,module,exports) {
+})({15:[function(require,module,exports) {
 /*
 object-assign
 (c) Sindre Sorhus
@@ -189,7 +189,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
-},{}],10:[function(require,module,exports) {
+},{}],17:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -243,7 +243,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 }
 
 module.exports = invariant;
-},{}],11:[function(require,module,exports) {
+},{}],18:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -261,7 +261,7 @@ if ('development' !== 'production') {
 }
 
 module.exports = emptyObject;
-},{}],12:[function(require,module,exports) {
+},{}],16:[function(require,module,exports) {
 "use strict";
 
 /**
@@ -298,7 +298,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],13:[function(require,module,exports) {
+},{}],19:[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
  *
@@ -361,7 +361,7 @@ if ('development' !== 'production') {
 }
 
 module.exports = warning;
-},{"./emptyFunction":12}],21:[function(require,module,exports) {
+},{"./emptyFunction":16}],27:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -375,7 +375,7 @@ var ReactPropTypesSecret = 'SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED';
 
 module.exports = ReactPropTypesSecret;
 
-},{}],14:[function(require,module,exports) {
+},{}],20:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -435,7 +435,7 @@ function checkPropTypes(typeSpecs, values, location, componentName, getStack) {
 }
 
 module.exports = checkPropTypes;
-},{"fbjs/lib/invariant":10,"fbjs/lib/warning":13,"./lib/ReactPropTypesSecret":21}],8:[function(require,module,exports) {
+},{"fbjs/lib/invariant":17,"fbjs/lib/warning":19,"./lib/ReactPropTypesSecret":27}],10:[function(require,module,exports) {
 /** @license React v16.3.2
  * react.development.js
  *
@@ -1844,7 +1844,7 @@ if ('development' !== "production") {
     module.exports = react;
   })();
 }
-},{"object-assign":9,"fbjs/lib/invariant":10,"fbjs/lib/emptyObject":11,"fbjs/lib/warning":13,"fbjs/lib/emptyFunction":12,"prop-types/checkPropTypes":14}],5:[function(require,module,exports) {
+},{"object-assign":15,"fbjs/lib/invariant":17,"fbjs/lib/emptyObject":18,"fbjs/lib/warning":19,"fbjs/lib/emptyFunction":16,"prop-types/checkPropTypes":20}],6:[function(require,module,exports) {
 'use strict';
 
 if ('development' === 'production') {
@@ -1852,7 +1852,7 @@ if ('development' === 'production') {
 } else {
   module.exports = require('./cjs/react.development.js');
 }
-},{"./cjs/react.development.js":8}],15:[function(require,module,exports) {
+},{"./cjs/react.development.js":10}],21:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1886,7 +1886,7 @@ var ExecutionEnvironment = {
 };
 
 module.exports = ExecutionEnvironment;
-},{}],17:[function(require,module,exports) {
+},{}],22:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -1923,7 +1923,7 @@ function getActiveElement(doc) /*?DOMElement*/{
 }
 
 module.exports = getActiveElement;
-},{}],16:[function(require,module,exports) {
+},{}],23:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -1989,7 +1989,7 @@ function shallowEqual(objA, objB) {
 }
 
 module.exports = shallowEqual;
-},{}],27:[function(require,module,exports) {
+},{}],31:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -2012,7 +2012,7 @@ function isNode(object) {
 }
 
 module.exports = isNode;
-},{}],24:[function(require,module,exports) {
+},{}],29:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -2035,7 +2035,7 @@ function isTextNode(object) {
 }
 
 module.exports = isTextNode;
-},{"./isNode":27}],18:[function(require,module,exports) {
+},{"./isNode":31}],24:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -2073,7 +2073,7 @@ function containsNode(outerNode, innerNode) {
 }
 
 module.exports = containsNode;
-},{"./isTextNode":24}],22:[function(require,module,exports) {
+},{"./isTextNode":29}],28:[function(require,module,exports) {
 'use strict';
 
 /**
@@ -2104,7 +2104,7 @@ function hyphenate(string) {
 }
 
 module.exports = hyphenate;
-},{}],19:[function(require,module,exports) {
+},{}],25:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -2141,7 +2141,7 @@ function hyphenateStyleName(string) {
 }
 
 module.exports = hyphenateStyleName;
-},{"./hyphenate":22}],23:[function(require,module,exports) {
+},{"./hyphenate":28}],30:[function(require,module,exports) {
 "use strict";
 
 /**
@@ -2171,7 +2171,7 @@ function camelize(string) {
 }
 
 module.exports = camelize;
-},{}],20:[function(require,module,exports) {
+},{}],26:[function(require,module,exports) {
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -2209,7 +2209,7 @@ function camelizeStyleName(string) {
 }
 
 module.exports = camelizeStyleName;
-},{"./camelize":23}],7:[function(require,module,exports) {
+},{"./camelize":30}],9:[function(require,module,exports) {
 /** @license React v16.3.2
  * react-dom.development.js
  *
@@ -18827,7 +18827,7 @@ if ('development' !== "production") {
     module.exports = reactDom;
   })();
 }
-},{"fbjs/lib/invariant":10,"react":5,"fbjs/lib/warning":13,"fbjs/lib/ExecutionEnvironment":15,"object-assign":9,"fbjs/lib/emptyFunction":12,"prop-types/checkPropTypes":14,"fbjs/lib/getActiveElement":17,"fbjs/lib/shallowEqual":16,"fbjs/lib/containsNode":18,"fbjs/lib/emptyObject":11,"fbjs/lib/hyphenateStyleName":19,"fbjs/lib/camelizeStyleName":20}],6:[function(require,module,exports) {
+},{"fbjs/lib/invariant":17,"react":6,"fbjs/lib/warning":19,"fbjs/lib/ExecutionEnvironment":21,"object-assign":15,"fbjs/lib/emptyFunction":16,"prop-types/checkPropTypes":20,"fbjs/lib/getActiveElement":22,"fbjs/lib/shallowEqual":23,"fbjs/lib/containsNode":24,"fbjs/lib/emptyObject":18,"fbjs/lib/hyphenateStyleName":25,"fbjs/lib/camelizeStyleName":26}],5:[function(require,module,exports) {
 'use strict';
 
 function checkDCE() {
@@ -18863,76 +18863,148 @@ if ('development' === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":7}],25:[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":9}],13:[function(require,module,exports) {
+var define;
+/*!
+  Copyright (c) 2016 Jed Watson.
+  Licensed under the MIT License (MIT), see
+  http://jedwatson.github.io/classnames
+*/
+/* global define */
+
+(function () {
+	'use strict';
+
+	var hasOwn = {}.hasOwnProperty;
+
+	function classNames () {
+		var classes = [];
+
+		for (var i = 0; i < arguments.length; i++) {
+			var arg = arguments[i];
+			if (!arg) continue;
+
+			var argType = typeof arg;
+
+			if (argType === 'string' || argType === 'number') {
+				classes.push(arg);
+			} else if (Array.isArray(arg)) {
+				classes.push(classNames.apply(null, arg));
+			} else if (argType === 'object') {
+				for (var key in arg) {
+					if (hasOwn.call(arg, key) && arg[key]) {
+						classes.push(key);
+					}
+				}
+			}
+		}
+
+		return classes.join(' ');
+	}
+
+	if (typeof module !== 'undefined' && module.exports) {
+		module.exports = classNames;
+	} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
+		// register as 'classnames', consistent with npm package name
+		define('classnames', [], function () {
+			return classNames;
+		});
+	} else {
+		window.classNames = classNames;
+	}
+}());
+
+},{}],37:[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var closeMenu = exports.closeMenu = function closeMenu() {
+  var $openMenu = document.querySelector('.operate-menu.open');
+  if ($openMenu) {
+    $openMenu.classList.remove('open');
+  }
+};
+},{}],8:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 var TreeNode = function TreeNode(_ref) {
   var data = _ref.data,
       _ref$parentKey = _ref.parentKey,
       parentKey = _ref$parentKey === undefined ? 0 : _ref$parentKey,
-      addNode = _ref.addNode,
-      deleteNode = _ref.deleteNode,
-      editNode = _ref.editNode;
+      methods = _objectWithoutProperties(_ref, ['data', 'parentKey']);
 
+  var toggleNode = methods.toggleNode;
+
+  var treeNodeWrapClassnames = function treeNodeWrapClassnames(_ref2) {
+    var isOpen = _ref2.isOpen;
+    return (0, _classnames2.default)({
+      'tree-node-wrap': true,
+      'tree-node-open': isOpen
+    });
+  };
+  var openMenu = function openMenu(event) {
+    event.stopPropagation();
+    (0, _utils.closeMenu)();
+    var $menu = document.querySelector('.operate-menu');
+    $menu.classList.toggle('open');
+    $menu.style.left = event.clientX - 50 + 'px';
+    $menu.style.top = event.clientY + 10 + 'px';
+  };
   return data.map(function (node, idx) {
     var key = parentKey + '-' + idx;
+    var hasChildren = node.children && node.children.length > 0;
     return _react2.default.createElement(
       'li',
-      { key: key },
+      { key: key, className: treeNodeWrapClassnames(node.state) },
       _react2.default.createElement(
-        'span',
-        null,
+        'div',
+        { className: 'tree-node' },
+        hasChildren ? _react2.default.createElement('i', { className: 'node-control', onClick: function onClick() {
+            return toggleNode(key);
+          } }) : _react2.default.createElement('i', { style: { width: 20 } }),
         _react2.default.createElement(
-          'i',
-          { onClick: function onClick() {
-              return addNode(key);
-            } },
-          '+'
-        ),
-        node.name,
-        key,
-        _react2.default.createElement(
-          'i',
-          { onClick: function onClick() {
-              return deleteNode(key);
-            } },
-          'delete'
-        ),
-        _react2.default.createElement('br', null),
-        _react2.default.createElement(
-          'i',
-          { onClick: function onClick() {
-              return editNode(key);
-            } },
-          'edit'
+          'div',
+          { className: 'node-text', 'data-key': key },
+          node.name,
+          key,
+          _react2.default.createElement('i', { className: 'iconfont icon-menu', onClick: openMenu })
         )
       ),
-      node.children && node.children.length > 0 && _react2.default.createElement(
+      hasChildren && _react2.default.createElement(
         'ul',
-        null,
-        _react2.default.createElement(TreeNode, { data: node.children,
-          addNode: addNode,
-          deleteNode: deleteNode,
-          editNode: editNode,
+        { className: 'tree-children' },
+        _react2.default.createElement(TreeNode, _extends({ data: node.children,
           parentKey: key
-        })
+        }, methods))
       )
     );
   });
 };
 
 exports.default = TreeNode;
-},{"react":5}],29:[function(require,module,exports) {
+},{"react":6,"classnames":13,"./utils":37}],14:[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -19119,7 +19191,7 @@ process.chdir = function (dir) {
 process.umask = function () {
     return 0;
 };
-},{}],28:[function(require,module,exports) {
+},{}],11:[function(require,module,exports) {
 var process = require("process");
 "use strict";
 
@@ -19643,7 +19715,7 @@ exports.setAutoFreeze = setAutoFreeze;
 exports.setUseProxies = setUseProxies;
 exports.default = produce;
 //# sourceMappingURL=immer.module.js.map
-},{"process":29}],3:[function(require,module,exports) {
+},{"process":14}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19664,6 +19736,8 @@ var _immer = require('immer');
 
 var _immer2 = _interopRequireDefault(_immer);
 
+var _utils = require('./utils');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -19674,6 +19748,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var data = [{
   name: '1-1text',
+  state: {
+    isOpen: true
+  },
   children: [{ name: '2-1text' }, { name: "2-2text" }, {
     name: '2-3text', children: [{
       name: '3-1text', children: [{ name: '4-1text' }]
@@ -19687,6 +19764,32 @@ var data = [{
     }, { name: '3-2text' }]
   }]
 }];
+
+var NODE_DEFAULT_STATE = {
+  isOpen: false,
+  isDisabled: false,
+  isChecked: false
+};
+
+var setDefaultState = function setDefaultState(data) {
+  return (0, _immer2.default)(data, function (draft) {
+    draft.forEach(function (o) {
+      o.state = Object.assign({}, NODE_DEFAULT_STATE, o.state);
+      if (Array.isArray(o.children) && o.children.length > 0) {
+        setDefaultState(o.children);
+      }
+    });
+  });
+};
+
+/**
+ * props list
+ * propsName | valueType | defaultValue | description
+ * hasOperate     boolean     false        是否有操作菜单
+ * hasCheckbox    boolean     false        是否有勾选
+ * onActive       function                 单击激活后的回调 // TODO
+ * onChecked      function                 选中后的回调 // TODO
+ **/
 
 var Tree = function (_React$Component) {
   _inherits(Tree, _React$Component);
@@ -19703,49 +19806,88 @@ var Tree = function (_React$Component) {
     }
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Tree.__proto__ || Object.getPrototypeOf(Tree)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
-      data: data,
-      selected: ''
-    }, _this.nodeAction = function (action, key) {
+      data: setDefaultState(data),
+      selected: '',
+      active_key: ''
+    }, _this.addNode = function (key) {
       var index_arr = key.split('-').slice(1);
-      var new_data = _this.state.data;
-      if (action === 'add') {
-        new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-          var current_data = index_arr.reduce(function (result, i, idx) {
+
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        var current_data = index_arr.reduce(function (result, i, idx) {
+          return idx === index_arr.length - 1 ? result[i] : result[i].children;
+        }, draftState);
+        if (!Array.isArray(current_data.children)) {
+          current_data.children = [];
+        }
+        current_data.children.push({
+          name: 'new node',
+          state: NODE_DEFAULT_STATE
+        });
+        current_data.state.isOpen = true;
+      });
+      _this.setState({
+        data: new_data
+      }, function () {
+        (0, _utils.closeMenu)();
+      });
+    }, _this.deleteNode = function (key) {
+      var index_arr = key.split('-').slice(1);
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        var delete_node_index = index_arr.pop();
+        // 如果不是根节点
+        if (index_arr.length > 0) {
+          var parent_data = index_arr.reduce(function (result, i, idx) {
             return idx === index_arr.length - 1 ? result[i] : result[i].children;
           }, draftState);
-          if (!Array.isArray(current_data.children)) {
-            current_data.children = [];
-          }
-          current_data.children.push({
-            name: 'new node'
-          });
-        });
-      }
-      if (action === 'delete') {
-        new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-          var delete_node_index = index_arr.pop();
-          // 如果不是根节点
-          if (index_arr.length > 0) {
-            var parent_data = index_arr.reduce(function (result, i, idx) {
-              return idx === index_arr.length - 1 ? result[i] : result[i].children;
-            }, draftState);
-            parent_data.children.splice(delete_node_index, 1);
-          } else {
-            draftState.splice(delete_node_index, 1);
-          }
-        });
-      }
-      if (action === 'edit') {
-        new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-          var current_data = index_arr.reduce(function (result, i, idx) {
-            return idx === index_arr.length - 1 ? result[i] : result[i].children;
-          }, draftState);
-          current_data.name += 'edited';
-        });
-      }
+          parent_data.children.splice(delete_node_index, 1);
+        } else {
+          draftState.splice(delete_node_index, 1);
+        }
+      });
+      _this.setState({
+        data: new_data
+      }, function () {
+        (0, _utils.closeMenu)();
+      });
+    }, _this.editNode = function (key) {
+      var index_arr = key.split('-').slice(1);
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        var current_data = index_arr.reduce(function (result, i, idx) {
+          return idx === index_arr.length - 1 ? result[i] : result[i].children;
+        }, draftState);
+        current_data.name += 'edited';
+      });
+      _this.setState({
+        data: new_data
+      }, function () {
+        (0, _utils.closeMenu)();
+      });
+    }, _this.toggleNode = function (key) {
+      var index_arr = key.split('-').slice(1);
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        var current_data = index_arr.reduce(function (result, i, idx) {
+          return idx === index_arr.length - 1 ? result[i] : result[i].children;
+        }, draftState);
+        current_data.state.isOpen = !current_data.state.isOpen;
+      });
       _this.setState({
         data: new_data
       });
+    }, _this.handleClick = function (event) {
+      var target = event.target;
+
+      if (target.className === 'node-text') {
+        var $activeNode = document.querySelector('.node-text.active');
+        if ($activeNode) {
+          $activeNode.className = 'node-text';
+        }
+        target.classList.add('active');
+        _this.setState({
+          active_key: target.getAttribute('data-key')
+        });
+      }
+    }, _this.handleWrapClick = function (event) {
+      (0, _utils.closeMenu)();
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
@@ -19756,28 +19898,57 @@ var Tree = function (_React$Component) {
 
       var _state = this.state,
           data = _state.data,
-          selected = _state.selected;
+          selected = _state.selected,
+          active_key = _state.active_key;
 
       return _react2.default.createElement(
         'div',
-        { className: 'tree-wrap' },
+        { className: 'tree-wrap', onClick: this.handleWrapClick },
         _react2.default.createElement(
           'p',
           null,
           'selected key: ',
           selected
         ),
-        _react2.default.createElement(_TreeNode2.default, { data: data,
-          addNode: function addNode(key) {
-            return _this2.nodeAction('add', key);
-          },
-          deleteNode: function deleteNode(key) {
-            return _this2.nodeAction('delete', key);
-          },
-          editNode: function editNode(key) {
-            return _this2.nodeAction('edit', key);
-          }
-        })
+        _react2.default.createElement(
+          'ul',
+          { onClick: function onClick(e) {
+              return _this2.handleClick(e);
+            } },
+          _react2.default.createElement(_TreeNode2.default, { data: data,
+            addNode: this.addNode,
+            deleteNode: this.deleteNode,
+            editNode: this.editNode,
+            toggleNode: this.toggleNode
+          })
+        ),
+        _react2.default.createElement(
+          'ul',
+          { className: 'operate-menu', onClick: function onClick(e) {
+              return e.stopPropagation();
+            } },
+          _react2.default.createElement(
+            'li',
+            { onClick: function onClick() {
+                return _this2.addNode(active_key);
+              } },
+            '\u6DFB\u52A0\u5B50\u90E8\u95E8'
+          ),
+          _react2.default.createElement(
+            'li',
+            { onClick: function onClick() {
+                return _this2.editNode(active_key);
+              } },
+            '\u4FEE\u6539\u540D\u79F0'
+          ),
+          _react2.default.createElement(
+            'li',
+            { onClick: function onClick() {
+                return _this2.deleteNode(active_key);
+              } },
+            '\u5220\u9664'
+          )
+        )
       );
     }
   }]);
@@ -19786,7 +19957,74 @@ var Tree = function (_React$Component) {
 }(_react2.default.Component);
 
 exports.default = Tree;
-},{"react":5,"./TreeNode":25,"immer":28}],2:[function(require,module,exports) {
+},{"react":6,"./TreeNode":8,"immer":11,"./utils":37}],12:[function(require,module,exports) {
+var bundleURL = null;
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+
+  return bundleURL;
+}
+
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp):\/\/[^)\n]+/g);
+    if (matches) {
+      return getBaseURL(matches[0]);
+    }
+  }
+
+  return '/';
+}
+
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],7:[function(require,module,exports) {
+var bundle = require('./bundle-url');
+
+function updateLink(link) {
+  var newLink = link.cloneNode();
+  newLink.onload = function () {
+    link.remove();
+  };
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+
+var cssTimeout = null;
+function reloadCSS() {
+  if (cssTimeout) {
+    return;
+  }
+
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
+    }
+
+    cssTimeout = null;
+  }, 50);
+}
+
+module.exports = reloadCSS;
+},{"./bundle-url":12}],3:[function(require,module,exports) {
+
+        var reloadCSS = require('_css_loader');
+        module.hot.dispose(reloadCSS);
+        module.hot.accept(reloadCSS);
+      
+},{"_css_loader":7}],2:[function(require,module,exports) {
 'use strict';
 
 var _react = require('react');
@@ -19801,6 +20039,8 @@ var _Tree = require('./src/Tree');
 
 var _Tree2 = _interopRequireDefault(_Tree);
 
+require('./index.scss');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _reactDom2.default.render(_react2.default.createElement(
@@ -19808,7 +20048,7 @@ _reactDom2.default.render(_react2.default.createElement(
   null,
   _react2.default.createElement(_Tree2.default, null)
 ), document.getElementById('app'));
-},{"react":5,"react-dom":6,"./src/Tree":3}],30:[function(require,module,exports) {
+},{"react":6,"react-dom":5,"./src/Tree":4,"./index.scss":3}],36:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -19837,7 +20077,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '59882' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '51183' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -19978,5 +20218,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[30,2], null)
+},{}]},{},[36,2], null)
 //# sourceMappingURL=/react-tree-component.528060a6.map
