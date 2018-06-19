@@ -10,8 +10,8 @@ const data = [
       isOpen: true,
     },
     children: [
-      { name: '2-1text' },
-      { name: "2-2text" },
+      { name: '2-1text', id: 21 },
+      { name: "2-2text", id: 22 },
       {
         name: '2-3text', children: [
           {
@@ -26,8 +26,8 @@ const data = [
   }, {
     name: '1-2',
     children: [
-      { name: '2-1text' },
-      { name: "2-2text" },
+      { name: '2-1text', id: 21 },
+      { name: "2-2text", id: 22},
       {
         name: '2-3text', children: [
           {
@@ -62,19 +62,29 @@ const setDefaultState = (data) => produce(data, draft => {
 
 /**
  * props list
- * propsName | valueType | defaultValue | description
+ * propsName    | valueType | defaultValue | description
  * hasOperate     boolean     false        是否有操作菜单
  * hasCheckbox    boolean     false        是否有勾选
+ * isDisabledChecked boolean  true         是否勾选后禁用
+ * isCheckSameId  boolean     false        是否勾选相同id的项
+ * isRadio        boolean     false        是否单选
  * onActive       function                 单击激活后的回调 // TODO
  * onChecked      function                 选中后的回调 // TODO
  **/
 
 
 export default class Tree extends React.Component {
+  static defaultProps = {
+    isDisabledChecked: true,
+    hasOperate: false,
+    hasCheckbox: false,
+    isCheckSameId: false,
+    isRadio: false
+  }
   state = {
     data: setDefaultState(data),
-    selected: '',
-    active_key: ''
+    selected: [],
+    active_key: '',
   }
 
   addNode = (key) => {
@@ -130,6 +140,111 @@ export default class Tree extends React.Component {
     })
   }
 
+  checkNode = (key) => {
+    const index_arr = key.split('-').slice(1)
+    let { selected } = this.state
+    let current_id
+
+    let new_data = produce(this.state.data, draftState => {
+      if (this.props.isRadio) {
+        const setSameIdChecked = (data) => {
+          data.forEach(o => {
+            if (o.state.isChecked) {
+              o.state = {
+                isChecked: false,
+                isDisabled: this.props.isDisabledChecked && false
+              }
+            }
+            if (Array.isArray(o.children) && o.children.length > 0) {
+              setSameIdChecked(o.children)
+            }
+          })
+        }
+        setSameIdChecked(draftState)
+        selected = []
+      }
+      const current_data = index_arr.reduce((result, i, idx) => idx === index_arr.length - 1 ? result[i] : result[i].children, draftState)
+      if (!current_data.state.isChecked) {
+        current_id = current_data.id
+        selected.push({
+          ...current_data,
+          key: `result${key}`
+        })
+        current_data.state.isChecked = true
+        current_data.state.isOpen = false
+        if (this.props.isDisabledChecked) {
+          current_data.state.isDisabled = true
+        }
+      }
+    })
+
+    if (this.props.isCheckSameId) {
+      new_data = produce(new_data, draftState => {
+        const setSameIdChecked = (data) => {
+          data.forEach(o => {
+            if (o.id && o.id === current_id) {
+              o.state = {
+                isChecked: true,
+                isDisabled: this.props.isDisabledChecked
+              }
+            }
+            if (Array.isArray(o.children) && o.children.length > 0) {
+              setSameIdChecked(o.children)
+            }
+          })
+        }
+        setSameIdChecked(draftState)
+      })
+    }
+
+    this.setState({
+      data: new_data,
+      selected,
+    })
+  }
+
+  unCheckNode = (key, index) => {
+    const index_arr = key.replace('result', '').split('-').slice(1)
+    const { selected } = this.state
+    let current_id
+
+    let new_data = produce(this.state.data, draftState => {
+      const current_data = index_arr.reduce((result, i, idx) => idx === index_arr.length - 1 ? result[i] : result[i].children, draftState)
+      if (current_data.state.isChecked) {
+        current_id = current_data.id
+        selected.splice(index, 1)
+        current_data.state.isChecked = false
+        if (this.props.isDisabledChecked) {
+          current_data.state.isDisabled = false
+        }
+      }
+    })
+
+    if (this.props.isCheckSameId) {
+      new_data = produce(new_data, draftState => {
+        const setSameIdChecked = (data) => {
+          data.forEach(o => {
+            if (o.id && o.id === current_id) {
+              o.state = {
+                isChecked: false,
+                isDisabled: this.props.isDisabledChecked && false
+              }
+            }
+            if (Array.isArray(o.children) && o.children.length > 0) {
+              setSameIdChecked(o.children)
+            }
+          })
+        }
+        setSameIdChecked(draftState)
+      })
+    }
+
+    this.setState({
+      data: new_data,
+      selected,
+    })
+  }
+
   toggleNode = (key) => {
     const index_arr = key.split('-').slice(1)
     const new_data = produce(this.state.data, draftState => {
@@ -141,7 +256,7 @@ export default class Tree extends React.Component {
     })
   }
 
-  handleClick = (event) => {
+  toggleActive = (event) => {
     const { target } = event
     if (target.className === 'node-text') {
       const $activeNode = document.querySelector('.node-text.active')
@@ -165,15 +280,25 @@ export default class Tree extends React.Component {
       selected,
       active_key,
     } = this.state
+    const {
+      hasOperate,
+      hasCheckbox,
+    } = this.props
     return (
       <div className="tree-wrap" onClick={this.handleWrapClick}>
-        <p>selected key: {selected}</p>
-        <ul onClick={(e) => this.handleClick(e)}>
+        <ul>selected key:
+          {
+            selected.map((o, i) =>
+              <li key={o.key} onClick={() => this.unCheckNode(o.key, i)}>{o.name}</li>
+            )
+          }
+        </ul>
+        <ul onClick={(e) => hasOperate && this.toggleActive(e)}>
           <TreeNode data={data}
-                    addNode={this.addNode}
-                    deleteNode={this.deleteNode}
-                    editNode={this.editNode}
                     toggleNode={this.toggleNode}
+                    checkNode={this.checkNode}
+                    hasOperate={hasOperate}
+                    hasCheckbox={hasCheckbox}
           />
         </ul>
         <ul className="operate-menu" onClick={e => e.stopPropagation()}>

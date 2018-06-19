@@ -18953,15 +18953,25 @@ var TreeNode = function TreeNode(_ref) {
   var data = _ref.data,
       _ref$parentKey = _ref.parentKey,
       parentKey = _ref$parentKey === undefined ? 0 : _ref$parentKey,
-      methods = _objectWithoutProperties(_ref, ['data', 'parentKey']);
+      others = _objectWithoutProperties(_ref, ['data', 'parentKey']);
 
-  var toggleNode = methods.toggleNode;
+  var checkNode = others.checkNode,
+      toggleNode = others.toggleNode,
+      hasOperate = others.hasOperate,
+      hasCheckbox = others.hasCheckbox;
 
   var treeNodeWrapClassnames = function treeNodeWrapClassnames(_ref2) {
     var isOpen = _ref2.isOpen;
     return (0, _classnames2.default)({
       'tree-node-wrap': true,
       'tree-node-open': isOpen
+    });
+  };
+  var nodeTextClassnames = function nodeTextClassnames(_ref3) {
+    var isDisabled = _ref3.isDisabled;
+    return (0, _classnames2.default)({
+      'node-text': true,
+      'disabled': isDisabled
     });
   };
   var openMenu = function openMenu(event) {
@@ -18981,15 +18991,22 @@ var TreeNode = function TreeNode(_ref) {
       _react2.default.createElement(
         'div',
         { className: 'tree-node' },
-        hasChildren ? _react2.default.createElement('i', { className: 'node-control', onClick: function onClick() {
+        hasChildren && !node.state.isDisabled ? _react2.default.createElement('i', { className: 'node-control', onClick: function onClick() {
             return toggleNode(key);
           } }) : _react2.default.createElement('i', { style: { width: 20 } }),
         _react2.default.createElement(
           'div',
-          { className: 'node-text', 'data-key': key },
+          { className: nodeTextClassnames(node.state),
+            'data-key': key,
+            onClick: function onClick() {
+              return checkNode(key);
+            }
+          },
           node.name,
           key,
-          _react2.default.createElement('i', { className: 'iconfont icon-menu', onClick: openMenu })
+          hasOperate && _react2.default.createElement('i', { className: 'iconfont icon-menu', onClick: openMenu }),
+          hasCheckbox && _react2.default.createElement('i', { className: 'iconfont icon-round' }),
+          hasCheckbox && node.state.isChecked && _react2.default.createElement('i', { className: 'iconfont icon-roundcheckfill' })
         )
       ),
       hasChildren && _react2.default.createElement(
@@ -18997,7 +19014,7 @@ var TreeNode = function TreeNode(_ref) {
         { className: 'tree-children' },
         _react2.default.createElement(TreeNode, _extends({ data: node.children,
           parentKey: key
-        }, methods))
+        }, others))
       )
     );
   });
@@ -19751,14 +19768,14 @@ var data = [{
   state: {
     isOpen: true
   },
-  children: [{ name: '2-1text' }, { name: "2-2text" }, {
+  children: [{ name: '2-1text', id: 21 }, { name: "2-2text", id: 22 }, {
     name: '2-3text', children: [{
       name: '3-1text', children: [{ name: '4-1text' }]
     }, { name: '3-2text' }]
   }]
 }, {
   name: '1-2',
-  children: [{ name: '2-1text' }, { name: "2-2text" }, {
+  children: [{ name: '2-1text', id: 21 }, { name: "2-2text", id: 22 }, {
     name: '2-3text', children: [{
       name: '3-1text', children: [{ name: '4-1text' }]
     }, { name: '3-2text' }]
@@ -19784,9 +19801,12 @@ var setDefaultState = function setDefaultState(data) {
 
 /**
  * props list
- * propsName | valueType | defaultValue | description
+ * propsName    | valueType | defaultValue | description
  * hasOperate     boolean     false        是否有操作菜单
  * hasCheckbox    boolean     false        是否有勾选
+ * isDisabledChecked boolean  true         是否勾选后禁用
+ * isCheckSameId  boolean     false        是否勾选相同id的项
+ * isRadio        boolean     false        是否单选
  * onActive       function                 单击激活后的回调 // TODO
  * onChecked      function                 选中后的回调 // TODO
  **/
@@ -19807,7 +19827,7 @@ var Tree = function (_React$Component) {
 
     return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = Tree.__proto__ || Object.getPrototypeOf(Tree)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
       data: setDefaultState(data),
-      selected: '',
+      selected: [],
       active_key: ''
     }, _this.addNode = function (key) {
       var index_arr = key.split('-').slice(1);
@@ -19862,6 +19882,112 @@ var Tree = function (_React$Component) {
       }, function () {
         (0, _utils.closeMenu)();
       });
+    }, _this.checkNode = function (key) {
+      var index_arr = key.split('-').slice(1);
+      var selected = _this.state.selected;
+
+      var current_id = void 0;
+
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        if (_this.props.isRadio) {
+          var setSameIdChecked = function setSameIdChecked(data) {
+            data.forEach(function (o) {
+              if (o.state.isChecked) {
+                o.state = {
+                  isChecked: false,
+                  isDisabled: _this.props.isDisabledChecked && false
+                };
+              }
+              if (Array.isArray(o.children) && o.children.length > 0) {
+                setSameIdChecked(o.children);
+              }
+            });
+          };
+          setSameIdChecked(draftState);
+          selected = [];
+        }
+        var current_data = index_arr.reduce(function (result, i, idx) {
+          return idx === index_arr.length - 1 ? result[i] : result[i].children;
+        }, draftState);
+        if (!current_data.state.isChecked) {
+          current_id = current_data.id;
+          selected.push(Object.assign({}, current_data, {
+            key: 'result' + key
+          }));
+          current_data.state.isChecked = true;
+          current_data.state.isOpen = false;
+          if (_this.props.isDisabledChecked) {
+            current_data.state.isDisabled = true;
+          }
+        }
+      });
+
+      if (_this.props.isCheckSameId) {
+        new_data = (0, _immer2.default)(new_data, function (draftState) {
+          var setSameIdChecked = function setSameIdChecked(data) {
+            data.forEach(function (o) {
+              if (o.id && o.id === current_id) {
+                o.state = {
+                  isChecked: true,
+                  isDisabled: _this.props.isDisabledChecked
+                };
+              }
+              if (Array.isArray(o.children) && o.children.length > 0) {
+                setSameIdChecked(o.children);
+              }
+            });
+          };
+          setSameIdChecked(draftState);
+        });
+      }
+
+      _this.setState({
+        data: new_data,
+        selected: selected
+      });
+    }, _this.unCheckNode = function (key, index) {
+      var index_arr = key.replace('result', '').split('-').slice(1);
+      var selected = _this.state.selected;
+
+      var current_id = void 0;
+
+      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        var current_data = index_arr.reduce(function (result, i, idx) {
+          return idx === index_arr.length - 1 ? result[i] : result[i].children;
+        }, draftState);
+        if (current_data.state.isChecked) {
+          current_id = current_data.id;
+          selected.splice(index, 1);
+          current_data.state.isChecked = false;
+          if (_this.props.isDisabledChecked) {
+            current_data.state.isDisabled = false;
+          }
+        }
+      });
+
+      if (_this.props.isCheckSameId) {
+        new_data = (0, _immer2.default)(new_data, function (draftState) {
+          var setSameIdChecked = function setSameIdChecked(data) {
+            data.forEach(function (o) {
+              if (o.id && o.id === current_id) {
+                o.state = {
+                  isChecked: false,
+                  isDisabled: _this.props.isDisabledChecked && false
+                };
+              }
+              if (Array.isArray(o.children) && o.children.length > 0) {
+                setSameIdChecked(o.children);
+              }
+            });
+          };
+          setSameIdChecked(draftState);
+        });
+      }
+
+      _this.setState({
+        data: new_data,
+        selected: selected
+      });
     }, _this.toggleNode = function (key) {
       var index_arr = key.split('-').slice(1);
       var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
@@ -19873,7 +19999,7 @@ var Tree = function (_React$Component) {
       _this.setState({
         data: new_data
       });
-    }, _this.handleClick = function (event) {
+    }, _this.toggleActive = function (event) {
       var target = event.target;
 
       if (target.className === 'node-text') {
@@ -19900,26 +20026,37 @@ var Tree = function (_React$Component) {
           data = _state.data,
           selected = _state.selected,
           active_key = _state.active_key;
+      var _props = this.props,
+          hasOperate = _props.hasOperate,
+          hasCheckbox = _props.hasCheckbox;
 
       return _react2.default.createElement(
         'div',
         { className: 'tree-wrap', onClick: this.handleWrapClick },
         _react2.default.createElement(
-          'p',
+          'ul',
           null,
-          'selected key: ',
-          selected
+          'selected key:',
+          selected.map(function (o, i) {
+            return _react2.default.createElement(
+              'li',
+              { key: o.key, onClick: function onClick() {
+                  return _this2.unCheckNode(o.key, i);
+                } },
+              o.name
+            );
+          })
         ),
         _react2.default.createElement(
           'ul',
           { onClick: function onClick(e) {
-              return _this2.handleClick(e);
+              return hasOperate && _this2.toggleActive(e);
             } },
           _react2.default.createElement(_TreeNode2.default, { data: data,
-            addNode: this.addNode,
-            deleteNode: this.deleteNode,
-            editNode: this.editNode,
-            toggleNode: this.toggleNode
+            toggleNode: this.toggleNode,
+            checkNode: this.checkNode,
+            hasOperate: hasOperate,
+            hasCheckbox: hasCheckbox
           })
         ),
         _react2.default.createElement(
@@ -19956,6 +20093,13 @@ var Tree = function (_React$Component) {
   return Tree;
 }(_react2.default.Component);
 
+Tree.defaultProps = {
+  isDisabledChecked: true,
+  hasOperate: false,
+  hasCheckbox: false,
+  isCheckSameId: false,
+  isRadio: false
+};
 exports.default = Tree;
 },{"react":6,"./TreeNode":8,"immer":11,"./utils":37}],12:[function(require,module,exports) {
 var bundleURL = null;
@@ -20046,7 +20190,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(
   'div',
   null,
-  _react2.default.createElement(_Tree2.default, null)
+  _react2.default.createElement(_Tree2.default, { hasCheckbox: true, isCheckSameId: true, isRadio: true })
 ), document.getElementById('app'));
 },{"react":6,"react-dom":5,"./src/Tree":4,"./index.scss":3}],36:[function(require,module,exports) {
 var global = arguments[3];

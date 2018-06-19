@@ -67,8 +67,9 @@
     }
   }
   .node-text {
-    flex: auto;
     position: relative;
+    flex: auto;
+    cursor: pointer;
     .icon-menu {
       position: absolute;
       right: 0;
@@ -76,10 +77,33 @@
       display: none;
       cursor: pointer;
     }
+    .icon-round, .icon-roundcheckfill {
+      position: absolute;
+      right: 0;
+
+      font-size: 20px;
+      color: #999;
+    }
     &.active {
       color: deepskyblue;
       .icon-menu {
         display: inline;
+      }
+      .icon-round {
+        color: #999;
+      }
+    }
+    &.disabled {
+      color: #999;
+      cursor: not-allowed;
+      &:hover {
+        font-weight: normal;
+      }
+    }
+    &:hover {
+      font-weight: bold;
+      i {
+        font-weight: normal;
       }
     }
   }

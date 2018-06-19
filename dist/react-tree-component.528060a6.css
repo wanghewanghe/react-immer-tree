@@ -46,17 +46,34 @@
       transform: rotate(45deg) translateX(-2px);
       transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), -webkit-transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1); }
   .tree-node .node-text {
+    position: relative;
     flex: auto;
-    position: relative; }
+    cursor: pointer; }
     .tree-node .node-text .icon-menu {
       position: absolute;
       right: 0;
       display: none;
       cursor: pointer; }
+    .tree-node .node-text .icon-round, .tree-node .node-text .icon-roundcheckfill {
+      position: absolute;
+      right: 0;
+      font-size: 20px;
+      color: #999; }
     .tree-node .node-text.active {
       color: deepskyblue; }
       .tree-node .node-text.active .icon-menu {
         display: inline; }
+      .tree-node .node-text.active .icon-round {
+        color: #999; }
+    .tree-node .node-text.disabled {
+      color: #999;
+      cursor: not-allowed; }
+      .tree-node .node-text.disabled:hover {
+        font-weight: normal; }
+    .tree-node .node-text:hover {
+      font-weight: bold; }
+      .tree-node .node-text:hover i {
+        font-weight: normal; }
 
 .operate-menu {
   position: absolute;
