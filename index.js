@@ -5,7 +5,7 @@ import './index.scss'
 
 ReactDOM.render(
   <div>
-    <Tree hasCheckbox isCheckSameId onChecked={console.log}/>
+    <Tree hasCheckbox isCheckSameId onUnchecked={console.log}/>
     {/*<Tree hasOperate/>*/}
   </div>,
   document.getElementById('app'))

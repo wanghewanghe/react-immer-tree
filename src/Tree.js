@@ -228,7 +228,7 @@ export default class Tree extends React.Component {
     }
 
     this.props.onUnchecked(selected)
-    
+
     this.setState({
       data: new_data,
       selected,
