@@ -19836,7 +19836,8 @@ var setDefaultState = function setDefaultState(data) {
  * isCheckSameId  boolean     false        是否勾选相同id的项
  * isRadio        boolean     false        是否单选
  * onActive       function                 单击激活后的回调 // TODO
- * onChecked      function                 选中后的回调 // TODO
+ * onChecked      function                 选中后的回调
+ * onUnchecked    function                 取消选中后的回调
  * beforeAdd      function                 菜单中添加子节点添加前的回调，需要返回true
  * onAdd          function                 菜单中添加子节点(返回值为子节点信息{name: xxx, state: xxx})
  * beforeDelete   function                 菜单中删除节点前的回调，需要返回true
@@ -19937,6 +19938,7 @@ var Tree = function (_React$Component) {
         if (!current_data.state.isChecked) {
           current_id = current_data.id;
           selected.push(Object.assign({}, current_data, {
+            state: Object.assign({}, current_data.state),
             key: 'result' + key
           }));
           current_data.state.isOpen = false;
@@ -19951,6 +19953,8 @@ var Tree = function (_React$Component) {
           });
         });
       }
+
+      _this.props.onChecked(selected);
 
       _this.setState({
         data: new_data,
@@ -19981,6 +19985,8 @@ var Tree = function (_React$Component) {
           });
         });
       }
+
+      _this.props.onUnchecked(selected);
 
       _this.setState({
         data: new_data,
@@ -20114,7 +20120,9 @@ Tree.defaultProps = {
   beforeEdit: function beforeEdit() {
     return true;
   },
-  onEdit: function onEdit() {}
+  onEdit: function onEdit() {},
+  onChecked: function onChecked() {},
+  onUnchecked: function onUnchecked() {}
 };
 exports.default = Tree;
 },{"react":6,"./TreeNode":8,"immer":11,"./utils":37}],12:[function(require,module,exports) {
@@ -20206,7 +20214,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(
   'div',
   null,
-  _react2.default.createElement(_Tree2.default, { hasOperate: true })
+  _react2.default.createElement(_Tree2.default, { hasCheckbox: true, isCheckSameId: true, onChecked: console.log })
 ), document.getElementById('app'));
 },{"react":6,"react-dom":5,"./src/Tree":4,"./index.scss":3}],38:[function(require,module,exports) {
 var global = arguments[3];

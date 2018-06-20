@@ -66,7 +66,8 @@ const setDefaultState = (data) => produce(data, draft => {
  * isCheckSameId  boolean     false        是否勾选相同id的项
  * isRadio        boolean     false        是否单选
  * onActive       function                 单击激活后的回调 // TODO
- * onChecked      function                 选中后的回调 // TODO
+ * onChecked      function                 选中后的回调
+ * onUnchecked    function                 取消选中后的回调
  * beforeAdd      function                 菜单中添加子节点添加前的回调，需要返回true
  * onAdd          function                 菜单中添加子节点(返回值为子节点信息{name: xxx, state: xxx})
  * beforeDelete   function                 菜单中删除节点前的回调，需要返回true
@@ -86,6 +87,8 @@ export default class Tree extends React.Component {
     beforeDelete: () => true,
     beforeEdit: () => true,
     onEdit: () => {},
+    onChecked: () => {},
+    onUnchecked: () => {},
   }
   state = {
     data: setDefaultState(data),
@@ -175,6 +178,7 @@ export default class Tree extends React.Component {
         current_id = current_data.id
         selected.push({
           ...current_data,
+          state: {...current_data.state},
           key: `result${key}`
         })
         current_data.state.isOpen = false
@@ -189,6 +193,8 @@ export default class Tree extends React.Component {
         })
       })
     }
+
+    this.props.onChecked(selected)
 
     this.setState({
       data: new_data,
@@ -221,6 +227,8 @@ export default class Tree extends React.Component {
       })
     }
 
+    this.props.onUnchecked(selected)
+    
     this.setState({
       data: new_data,
       selected,
