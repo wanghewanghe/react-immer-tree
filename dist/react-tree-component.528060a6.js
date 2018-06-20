@@ -18914,114 +18914,7 @@ var define;
 	}
 }());
 
-},{}],37:[function(require,module,exports) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var closeMenu = exports.closeMenu = function closeMenu() {
-  var $openMenu = document.querySelector('.operate-menu.open');
-  if ($openMenu) {
-    $openMenu.classList.remove('open');
-  }
-};
-},{}],8:[function(require,module,exports) {
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _classnames = require('classnames');
-
-var _classnames2 = _interopRequireDefault(_classnames);
-
-var _utils = require('./utils');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var TreeNode = function TreeNode(_ref) {
-  var data = _ref.data,
-      _ref$parentKey = _ref.parentKey,
-      parentKey = _ref$parentKey === undefined ? 0 : _ref$parentKey,
-      others = _objectWithoutProperties(_ref, ['data', 'parentKey']);
-
-  var checkNode = others.checkNode,
-      toggleNode = others.toggleNode,
-      hasOperate = others.hasOperate,
-      hasCheckbox = others.hasCheckbox;
-
-  var treeNodeWrapClassnames = function treeNodeWrapClassnames(_ref2) {
-    var isOpen = _ref2.isOpen;
-    return (0, _classnames2.default)({
-      'tree-node-wrap': true,
-      'tree-node-open': isOpen
-    });
-  };
-  var nodeTextClassnames = function nodeTextClassnames(_ref3) {
-    var isDisabled = _ref3.isDisabled;
-    return (0, _classnames2.default)({
-      'node-text': true,
-      'disabled': isDisabled
-    });
-  };
-  var openMenu = function openMenu(event) {
-    event.stopPropagation();
-    (0, _utils.closeMenu)();
-    var $menu = document.querySelector('.operate-menu');
-    $menu.classList.toggle('open');
-    $menu.style.left = event.clientX - 50 + 'px';
-    $menu.style.top = event.clientY + 10 + 'px';
-  };
-  return data.map(function (node, idx) {
-    var key = parentKey + '-' + idx;
-    var hasChildren = node.children && node.children.length > 0;
-    return _react2.default.createElement(
-      'li',
-      { key: key, className: treeNodeWrapClassnames(node.state) },
-      _react2.default.createElement(
-        'div',
-        { className: 'tree-node' },
-        hasChildren && !node.state.isDisabled ? _react2.default.createElement('i', { className: 'node-control', onClick: function onClick() {
-            return toggleNode(key);
-          } }) : _react2.default.createElement('i', { style: { width: 20 } }),
-        _react2.default.createElement(
-          'div',
-          { className: nodeTextClassnames(node.state),
-            'data-key': key,
-            onClick: function onClick() {
-              return checkNode(key);
-            }
-          },
-          node.name,
-          key,
-          hasOperate && _react2.default.createElement('i', { className: 'iconfont icon-menu', onClick: openMenu }),
-          hasCheckbox && _react2.default.createElement('i', { className: 'iconfont icon-round' }),
-          hasCheckbox && node.state.isChecked && _react2.default.createElement('i', { className: 'iconfont icon-roundcheckfill' })
-        )
-      ),
-      hasChildren && _react2.default.createElement(
-        'ul',
-        { className: 'tree-children' },
-        _react2.default.createElement(TreeNode, _extends({ data: node.children,
-          parentKey: key
-        }, others))
-      )
-    );
-  });
-};
-
-exports.default = TreeNode;
-},{"react":6,"classnames":13,"./utils":37}],14:[function(require,module,exports) {
+},{}],14:[function(require,module,exports) {
 
 // shim for using process in browser
 var process = module.exports = {};
@@ -19732,7 +19625,145 @@ exports.setAutoFreeze = setAutoFreeze;
 exports.setUseProxies = setUseProxies;
 exports.default = produce;
 //# sourceMappingURL=immer.module.js.map
-},{"process":14}],4:[function(require,module,exports) {
+},{"process":14}],37:[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.produceNewData = exports.getNodeByIndexArr = exports.recursiveTreeData = exports.closeMenu = undefined;
+
+var _immer = require('immer');
+
+var _immer2 = _interopRequireDefault(_immer);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var closeMenu = exports.closeMenu = function closeMenu() {
+  var $openMenu = document.querySelector('.operate-menu.open');
+  if ($openMenu) {
+    $openMenu.classList.remove('open');
+  }
+};
+
+var recursiveTreeData = exports.recursiveTreeData = function recursiveTreeData(data) {
+  return function (func) {
+    data.forEach(function (o) {
+      func(o);
+      if (Array.isArray(o.children) && o.children.length > 0) {
+        recursiveTreeData(o.children)(func);
+      }
+    });
+  };
+};
+
+var getNodeByIndexArr = exports.getNodeByIndexArr = function getNodeByIndexArr(index_arr, data) {
+  return index_arr.reduce(function (result, i, idx) {
+    return idx === index_arr.length - 1 ? result[i] : result[i].children;
+  }, data);
+};
+
+var produceNewData = exports.produceNewData = function produceNewData(key, prevData, func) {
+  return (0, _immer2.default)(prevData, function (draftState) {
+    return func(getNodeByIndexArr(key.split('-').slice(1), draftState));
+  });
+};
+},{"immer":11}],8:[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _classnames = require('classnames');
+
+var _classnames2 = _interopRequireDefault(_classnames);
+
+var _utils = require('./utils');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var TreeNode = function TreeNode(_ref) {
+  var data = _ref.data,
+      _ref$parentKey = _ref.parentKey,
+      parentKey = _ref$parentKey === undefined ? 0 : _ref$parentKey,
+      others = _objectWithoutProperties(_ref, ['data', 'parentKey']);
+
+  var checkNode = others.checkNode,
+      toggleNode = others.toggleNode,
+      hasOperate = others.hasOperate,
+      hasCheckbox = others.hasCheckbox;
+
+  var treeNodeWrapClassnames = function treeNodeWrapClassnames(_ref2) {
+    var isOpen = _ref2.isOpen;
+    return (0, _classnames2.default)({
+      'tree-node-wrap': true,
+      'tree-node-open': isOpen
+    });
+  };
+  var nodeTextClassnames = function nodeTextClassnames(_ref3) {
+    var isDisabled = _ref3.isDisabled;
+    return (0, _classnames2.default)({
+      'node-text': true,
+      'disabled': isDisabled
+    });
+  };
+  var openMenu = function openMenu(event) {
+    event.stopPropagation();
+    (0, _utils.closeMenu)();
+    var $menu = document.querySelector('.operate-menu');
+    $menu.classList.toggle('open');
+    $menu.style.left = event.clientX - 50 + 'px';
+    $menu.style.top = event.clientY + 10 + 'px';
+  };
+  return data.map(function (node, idx) {
+    var key = parentKey + '-' + idx;
+    var hasChildren = node.children && node.children.length > 0;
+    return _react2.default.createElement(
+      'li',
+      { key: key, className: treeNodeWrapClassnames(node.state) },
+      _react2.default.createElement(
+        'div',
+        { className: 'tree-node' },
+        hasChildren && !node.state.isDisabled ? _react2.default.createElement('i', { className: 'node-control', onClick: function onClick() {
+            return toggleNode(key);
+          } }) : _react2.default.createElement('i', { style: { width: 20 } }),
+        _react2.default.createElement(
+          'div',
+          { className: nodeTextClassnames(node.state),
+            'data-key': key,
+            onClick: function onClick() {
+              return hasCheckbox && checkNode(key);
+            }
+          },
+          node.name,
+          key,
+          hasOperate && _react2.default.createElement('i', { className: 'iconfont icon-menu', onClick: openMenu }),
+          hasCheckbox && _react2.default.createElement('i', { className: 'iconfont icon-round' }),
+          hasCheckbox && node.state.isChecked && _react2.default.createElement('i', { className: 'iconfont icon-roundcheckfill' })
+        )
+      ),
+      hasChildren && _react2.default.createElement(
+        'ul',
+        { className: 'tree-children' },
+        _react2.default.createElement(TreeNode, _extends({ data: node.children,
+          parentKey: key
+        }, others))
+      )
+    );
+  });
+};
+
+exports.default = TreeNode;
+},{"react":6,"classnames":13,"./utils":37}],4:[function(require,module,exports) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19790,11 +19821,8 @@ var NODE_DEFAULT_STATE = {
 
 var setDefaultState = function setDefaultState(data) {
   return (0, _immer2.default)(data, function (draft) {
-    draft.forEach(function (o) {
-      o.state = Object.assign({}, NODE_DEFAULT_STATE, o.state);
-      if (Array.isArray(o.children) && o.children.length > 0) {
-        setDefaultState(o.children);
-      }
+    (0, _utils.recursiveTreeData)(draft)(function (data) {
+      data.state = Object.assign({}, NODE_DEFAULT_STATE, data.state);
     });
   });
 };
@@ -19809,6 +19837,11 @@ var setDefaultState = function setDefaultState(data) {
  * isRadio        boolean     false        是否单选
  * onActive       function                 单击激活后的回调 // TODO
  * onChecked      function                 选中后的回调 // TODO
+ * beforeAdd      function                 菜单中添加子节点添加前的回调，需要返回true
+ * onAdd          function                 菜单中添加子节点(返回值为子节点信息{name: xxx, state: xxx})
+ * beforeDelete   function                 菜单中删除节点前的回调，需要返回true
+ * beforeEdit     function                 菜单中修改名称前的回调，需要返回true
+ * onEdit         function                 菜单中修改名称，返回编辑的子节点名字
  **/
 
 var Tree = function (_React$Component) {
@@ -19830,58 +19863,56 @@ var Tree = function (_React$Component) {
       selected: [],
       active_key: ''
     }, _this.addNode = function (key) {
-      var index_arr = key.split('-').slice(1);
-
-      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-        var current_data = index_arr.reduce(function (result, i, idx) {
-          return idx === index_arr.length - 1 ? result[i] : result[i].children;
-        }, draftState);
-        if (!Array.isArray(current_data.children)) {
-          current_data.children = [];
-        }
-        current_data.children.push({
-          name: 'new node',
-          state: NODE_DEFAULT_STATE
+      if (_this.props.beforeAdd()) {
+        var new_data = (0, _utils.produceNewData)(key, _this.state.data, function (current_data) {
+          if (!Array.isArray(current_data.children)) {
+            current_data.children = [];
+          }
+          var node_info = Object.assign({
+            name: 'new node',
+            state: NODE_DEFAULT_STATE
+          }, _this.props.onAdd());
+          current_data.children.push(node_info);
+          current_data.state.isOpen = true;
         });
-        current_data.state.isOpen = true;
-      });
-      _this.setState({
-        data: new_data
-      }, function () {
-        (0, _utils.closeMenu)();
-      });
+        _this.setState({
+          data: new_data
+        }, function () {
+          (0, _utils.closeMenu)();
+        });
+      }
     }, _this.deleteNode = function (key) {
-      var index_arr = key.split('-').slice(1);
-      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-        var delete_node_index = index_arr.pop();
-        // 如果不是根节点
-        if (index_arr.length > 0) {
-          var parent_data = index_arr.reduce(function (result, i, idx) {
-            return idx === index_arr.length - 1 ? result[i] : result[i].children;
-          }, draftState);
-          parent_data.children.splice(delete_node_index, 1);
-        } else {
-          draftState.splice(delete_node_index, 1);
-        }
-      });
-      _this.setState({
-        data: new_data
-      }, function () {
-        (0, _utils.closeMenu)();
-      });
+      if (_this.props.beforeDelete()) {
+        var index_arr = key.split('-').slice(1);
+        var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+          var delete_node_index = index_arr.pop();
+          // 如果不是根节点
+          if (index_arr.length > 0) {
+            var parent_data = (0, _utils.getNodeByIndexArr)(index_arr, draftState);
+            parent_data.children.splice(delete_node_index, 1);
+          } else {
+            draftState.splice(delete_node_index, 1);
+          }
+        });
+        _this.setState({
+          data: new_data
+        }, function () {
+          (0, _utils.closeMenu)();
+        });
+      }
     }, _this.editNode = function (key) {
-      var index_arr = key.split('-').slice(1);
-      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-        var current_data = index_arr.reduce(function (result, i, idx) {
-          return idx === index_arr.length - 1 ? result[i] : result[i].children;
-        }, draftState);
-        current_data.name += 'edited';
-      });
-      _this.setState({
-        data: new_data
-      }, function () {
-        (0, _utils.closeMenu)();
-      });
+      if (_this.props.beforeEdit()) {
+        var new_name = _this.props.onEdit() || 'edited name';
+        var new_data = (0, _utils.produceNewData)(key, _this.state.data, function (current_data) {
+          current_data.name = new_name;
+        });
+
+        _this.setState({
+          data: new_data
+        }, function () {
+          (0, _utils.closeMenu)();
+        });
+      }
     }, _this.checkNode = function (key) {
       var index_arr = key.split('-').slice(1);
       var selected = _this.state.selected;
@@ -19889,55 +19920,35 @@ var Tree = function (_React$Component) {
       var current_id = void 0;
 
       var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
+        // 如果单选则先全部取消勾选
         if (_this.props.isRadio) {
-          var setSameIdChecked = function setSameIdChecked(data) {
-            data.forEach(function (o) {
+          var resetCheckedState = function resetCheckedState() {
+            (0, _utils.recursiveTreeData)(draftState)(function (o) {
               if (o.state.isChecked) {
-                o.state = {
-                  isChecked: false,
-                  isDisabled: _this.props.isDisabledChecked && false
-                };
-              }
-              if (Array.isArray(o.children) && o.children.length > 0) {
-                setSameIdChecked(o.children);
+                _this.setCheckedState(false, o);
               }
             });
           };
-          setSameIdChecked(draftState);
+          resetCheckedState();
           selected = [];
         }
-        var current_data = index_arr.reduce(function (result, i, idx) {
-          return idx === index_arr.length - 1 ? result[i] : result[i].children;
-        }, draftState);
+        // 勾选操作
+        var current_data = (0, _utils.getNodeByIndexArr)(index_arr, draftState);
         if (!current_data.state.isChecked) {
           current_id = current_data.id;
           selected.push(Object.assign({}, current_data, {
             key: 'result' + key
           }));
-          current_data.state.isChecked = true;
           current_data.state.isOpen = false;
-          if (_this.props.isDisabledChecked) {
-            current_data.state.isDisabled = true;
-          }
+          _this.setCheckedState(true, current_data);
         }
       });
-
+      // 勾选相同id的节点
       if (_this.props.isCheckSameId) {
         new_data = (0, _immer2.default)(new_data, function (draftState) {
-          var setSameIdChecked = function setSameIdChecked(data) {
-            data.forEach(function (o) {
-              if (o.id && o.id === current_id) {
-                o.state = {
-                  isChecked: true,
-                  isDisabled: _this.props.isDisabledChecked
-                };
-              }
-              if (Array.isArray(o.children) && o.children.length > 0) {
-                setSameIdChecked(o.children);
-              }
-            });
-          };
-          setSameIdChecked(draftState);
+          (0, _utils.recursiveTreeData)(draftState)(function (o) {
+            _this.setSameIdChecked(true, o, current_id);
+          });
         });
       }
 
@@ -19952,9 +19963,7 @@ var Tree = function (_React$Component) {
       var current_id = void 0;
 
       var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-        var current_data = index_arr.reduce(function (result, i, idx) {
-          return idx === index_arr.length - 1 ? result[i] : result[i].children;
-        }, draftState);
+        var current_data = (0, _utils.getNodeByIndexArr)(index_arr, draftState);
         if (current_data.state.isChecked) {
           current_id = current_data.id;
           selected.splice(index, 1);
@@ -19967,20 +19976,9 @@ var Tree = function (_React$Component) {
 
       if (_this.props.isCheckSameId) {
         new_data = (0, _immer2.default)(new_data, function (draftState) {
-          var setSameIdChecked = function setSameIdChecked(data) {
-            data.forEach(function (o) {
-              if (o.id && o.id === current_id) {
-                o.state = {
-                  isChecked: false,
-                  isDisabled: _this.props.isDisabledChecked && false
-                };
-              }
-              if (Array.isArray(o.children) && o.children.length > 0) {
-                setSameIdChecked(o.children);
-              }
-            });
-          };
-          setSameIdChecked(draftState);
+          (0, _utils.recursiveTreeData)(draftState)(function (o) {
+            _this.setSameIdChecked(false, o, current_id);
+          });
         });
       }
 
@@ -19989,11 +19987,7 @@ var Tree = function (_React$Component) {
         selected: selected
       });
     }, _this.toggleNode = function (key) {
-      var index_arr = key.split('-').slice(1);
-      var new_data = (0, _immer2.default)(_this.state.data, function (draftState) {
-        var current_data = index_arr.reduce(function (result, i, idx) {
-          return idx === index_arr.length - 1 ? result[i] : result[i].children;
-        }, draftState);
+      var new_data = (0, _utils.produceNewData)(key, _this.state.data, function (current_data) {
         current_data.state.isOpen = !current_data.state.isOpen;
       });
       _this.setState({
@@ -20014,6 +20008,15 @@ var Tree = function (_React$Component) {
       }
     }, _this.handleWrapClick = function (event) {
       (0, _utils.closeMenu)();
+    }, _this.setCheckedState = function (isChecked, data) {
+      data.state.isChecked = isChecked;
+      if (_this.props.isDisabledChecked) {
+        data.state.isDisabled = isChecked;
+      }
+    }, _this.setSameIdChecked = function (isChecked, data, current_id) {
+      if (data.id && data.id === current_id) {
+        _this.setCheckedState(isChecked, data);
+      }
     }, _temp), _possibleConstructorReturn(_this, _ret);
   }
 
@@ -20098,7 +20101,20 @@ Tree.defaultProps = {
   hasOperate: false,
   hasCheckbox: false,
   isCheckSameId: false,
-  isRadio: false
+  isRadio: false,
+  beforeAdd: function beforeAdd() {
+    return true;
+  },
+  onAdd: function onAdd() {
+    return {};
+  },
+  beforeDelete: function beforeDelete() {
+    return true;
+  },
+  beforeEdit: function beforeEdit() {
+    return true;
+  },
+  onEdit: function onEdit() {}
 };
 exports.default = Tree;
 },{"react":6,"./TreeNode":8,"immer":11,"./utils":37}],12:[function(require,module,exports) {
@@ -20190,9 +20206,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _reactDom2.default.render(_react2.default.createElement(
   'div',
   null,
-  _react2.default.createElement(_Tree2.default, { hasCheckbox: true, isCheckSameId: true, isRadio: true })
+  _react2.default.createElement(_Tree2.default, { hasOperate: true })
 ), document.getElementById('app'));
-},{"react":6,"react-dom":5,"./src/Tree":4,"./index.scss":3}],36:[function(require,module,exports) {
+},{"react":6,"react-dom":5,"./src/Tree":4,"./index.scss":3}],38:[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -20362,5 +20378,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.parcelRequire, id);
   });
 }
-},{}]},{},[36,2], null)
+},{}]},{},[38,2], null)
 //# sourceMappingURL=/react-tree-component.528060a6.map

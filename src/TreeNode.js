@@ -34,7 +34,7 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
 
           <div className={nodeTextClassnames(node.state)}
                data-key={key}
-               onClick={() => checkNode(key)}
+               onClick={() => hasCheckbox && checkNode(key)}
           >
             {node.name}{key}
             {hasOperate && <i className="iconfont icon-menu" onClick={openMenu}/>}

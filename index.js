@@ -5,6 +5,7 @@ import './index.scss'
 
 ReactDOM.render(
   <div>
-    <Tree hasCheckbox isCheckSameId isRadio/>
+    {/*<Tree hasCheckbox isCheckSameId isRadio/>*/}
+    <Tree hasOperate/>
   </div>,
   document.getElementById('app'))
