@@ -65,7 +65,7 @@ const setDefaultState = (data) => produce(data, draft => {
  * isDisabledChecked boolean  true         是否勾选后禁用
  * isCheckSameId  boolean     false        是否勾选相同id的项
  * isRadio        boolean     false        是否单选
- * onActive       function                 单击激活后的回调 // TODO
+ * isDraggable    boolean     false        是否拖拽
  * onChecked      function                 选中后的回调
  * onUnchecked    function                 取消选中后的回调
  * beforeAdd      function                 菜单中添加子节点添加前的回调，需要返回true
@@ -95,6 +95,8 @@ export default class Tree extends React.Component {
     selected: [],
     active_key: '',
   }
+
+  drag_node_key = ''
 
   addNode = (key) => {
     if (this.props.beforeAdd()) {
@@ -258,6 +260,56 @@ export default class Tree extends React.Component {
     }
   }
 
+  dragStart = event => {
+    event.target.style.background = '#e6f7ff'
+    this.drag_node_key = event.target.getAttribute('data-key')
+  }
+
+  dragEnd = event => {
+    event.target.style.background = 'transparent'
+    this.drag_node_key = ''
+  }
+
+  moveNode = event => {
+    event.target.style.background = 'transparent'
+    const drag_node_key = this.drag_node_key
+    const drop_node_key = event.target.getAttribute('data-key')
+    if (drag_node_key !== drop_node_key) {
+      const drag_index_arr = drag_node_key.split('-').slice(1)
+      const drop_index_arr = drop_node_key.split('-').slice(1)
+      let drag_data
+
+      const new_data = produce(this.state.data, draftState => {
+        const current_data = getNodeByIndexArr(drop_index_arr, draftState)
+        // 先删除
+        const delete_node_index = drag_index_arr.pop()
+        // 如果不是根节点
+
+        if (drag_index_arr.length > 0) {
+          const parent_data = getNodeByIndexArr(drag_index_arr, draftState)
+
+          if (!Array.isArray(parent_data.children)) {
+            parent_data.children = []
+          }
+          drag_data = parent_data.children.splice(delete_node_index, 1)[0]
+        } else {
+          drag_data = draftState.splice(delete_node_index, 1)[0]
+        }
+        // 再添加
+        console.log(drop_node_key, drop_index_arr)
+        if (!Array.isArray(current_data.children)) {
+          current_data.children = []
+        }
+        current_data.children.push(drag_data)
+        current_data.state.isOpen = true
+      })
+      this.setState({
+        data: new_data
+      })
+    }
+  }
+
+
   handleWrapClick = event => {
     closeMenu()
   }
@@ -284,6 +336,7 @@ export default class Tree extends React.Component {
     const {
       hasOperate,
       hasCheckbox,
+      isDraggable,
     } = this.props
     return (
       <div className="tree-wrap" onClick={this.handleWrapClick}>
@@ -300,6 +353,10 @@ export default class Tree extends React.Component {
                     checkNode={this.checkNode}
                     hasOperate={hasOperate}
                     hasCheckbox={hasCheckbox}
+                    isDraggable={isDraggable}
+                    dragStart={this.dragStart}
+                    dragEnd={this.dragEnd}
+                    moveNode={this.moveNode}
           />
         </ul>
         <ul className="operate-menu" onClick={e => e.stopPropagation()}>

@@ -3,7 +3,16 @@ import classnames from 'classnames'
 import { closeMenu } from "./utils";
 
 const TreeNode = ({ data, parentKey = 0, ...others }) => {
-  const { checkNode, toggleNode, hasOperate, hasCheckbox } = others
+  const {
+    checkNode,
+    toggleNode,
+    hasOperate,
+    hasCheckbox,
+    isDraggable,
+    dragStart,
+    dragEnd,
+    moveNode,
+  } = others
   const treeNodeWrapClassnames = ({isOpen}) => classnames({
     'tree-node-wrap': true,
     'tree-node-open': isOpen,
@@ -35,9 +44,25 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
           <div className={nodeTextClassnames(node.state)}
                data-key={key}
                onClick={() => hasCheckbox && checkNode(key)}
+               draggable={!hasCheckbox && isDraggable}
+               onDragStart={dragStart}
+               onDragEnd={dragEnd}
+               onDragEnter={e => e.preventDefault()}
+               onDragOver={e => {
+                 e.preventDefault()
+                 // console.log(e.target.getBoundingClientRect())
+                 e.target.style.background = '#1890ff'
+               }}
+               onDragLeave={e => {
+                 e.target.style.background = 'transparent'
+               }}
+               onDrop={moveNode}
           >
             {node.name}{key}
-            {hasOperate && <i className="iconfont icon-menu" onClick={openMenu}/>}
+            {hasOperate && <i className="iconfont icon-menu"
+                              onClick={openMenu}
+                              onDragOver={e => e.stopPropagation()}
+            />}
             {hasCheckbox && <i className="iconfont icon-round" />}
             {hasCheckbox && node.state.isChecked && <i className="iconfont icon-roundcheckfill" />}
           </div>
