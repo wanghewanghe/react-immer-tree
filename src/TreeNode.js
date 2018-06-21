@@ -12,6 +12,8 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
     dragStart,
     dragEnd,
     moveNode,
+    dragOver,
+    dragEnter,
   } = others
   const treeNodeWrapClassnames = ({isOpen}) => classnames({
     'tree-node-wrap': true,
@@ -47,14 +49,10 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
                draggable={!hasCheckbox && isDraggable}
                onDragStart={dragStart}
                onDragEnd={dragEnd}
-               onDragEnter={e => e.preventDefault()}
-               onDragOver={e => {
-                 e.preventDefault()
-                 // console.log(e.target.getBoundingClientRect())
-                 e.target.style.background = '#1890ff'
-               }}
+               onDragEnter={dragEnter}
+               onDragOver={dragOver}
                onDragLeave={e => {
-                 e.target.style.background = 'transparent'
+                 e.target.style = ''
                }}
                onDrop={moveNode}
           >

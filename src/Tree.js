@@ -1,7 +1,7 @@
 import React from 'react'
 import TreeNode from "./TreeNode";
 import produce from 'immer'
-import { closeMenu, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils";
+import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils";
 
 const data = [
   {
@@ -13,21 +13,23 @@ const data = [
       { name: '2-1text', id: 21 },
       { name: "2-2text", id: 22 },
       {
-        name: '2-3text', children: [
-          {
-            name: '3-1text', children: [
-              { name: '4-1text' }
-            ]
-          },
-          { name: '3-2text' }
-        ]
-      }
+        name: '2-3text', 
+        // children: [
+        //   {
+        //     name: '3-1text', children: [
+        //       { name: '4-1text' }
+        //     ]
+        //   },
+        //   { name: '3-2text' }
+        // ]
+      },
+      { name: "2-4text" },
     ],
   }, {
     name: '1-2',
     children: [
       { name: '2-1text', id: 21 },
-      { name: "2-2text", id: 22},
+      { name: "2-2text", id: 22 },
       {
         name: '2-3text', children: [
           {
@@ -97,6 +99,7 @@ export default class Tree extends React.Component {
   }
 
   drag_node_key = ''
+  drag_relative_index = 0
 
   addNode = (key) => {
     if (this.props.beforeAdd()) {
@@ -180,7 +183,7 @@ export default class Tree extends React.Component {
         current_id = current_data.id
         selected.push({
           ...current_data,
-          state: {...current_data.state},
+          state: { ...current_data.state },
           key: `result${key}`
         })
         current_data.state.isOpen = false
@@ -263,31 +266,84 @@ export default class Tree extends React.Component {
   dragStart = event => {
     event.target.style.background = '#e6f7ff'
     this.drag_node_key = event.target.getAttribute('data-key')
+    const $activeNode = document.querySelector('.node-text.active')
+    if ($activeNode) {
+      $activeNode.className = 'node-text'
+    }
+    const new_data = produceNewData(this.drag_node_key, this.state.data, current_data => {
+      current_data.state.isOpen = false
+    })
+    this.setState({
+      data: new_data
+    })
   }
 
   dragEnd = event => {
-    event.target.style.background = 'transparent'
+    event.target.style = ''
     this.drag_node_key = ''
   }
 
+  dragEnter = event => {
+    event.preventDefault()
+    const new_data = produceNewData(event.target.getAttribute('data-key'), this.state.data, current_data => {
+      current_data.state.isOpen = true
+    })
+    this.setState({
+      data: new_data
+    })
+  }
+
+  dragOver = event => {
+    event.preventDefault()
+    const { style } = event.target
+    const relative_index = getDropPosition(event)
+    if (relative_index === 1) {
+      style.borderBottom = '2px solid #1890ff'
+    } else if (relative_index === -1) {
+      style.borderTop = '2px solid #1890ff'
+    } else {
+      style.background = '#1890ff'
+    }
+    this.drag_relative_index = relative_index
+  }
+
   moveNode = event => {
-    event.target.style.background = 'transparent'
+    event.target.style = ''
     const drag_node_key = this.drag_node_key
     const drop_node_key = event.target.getAttribute('data-key')
     if (drag_node_key !== drop_node_key) {
       const drag_index_arr = drag_node_key.split('-').slice(1)
       const drop_index_arr = drop_node_key.split('-').slice(1)
       let drag_data
-
+      
       const new_data = produce(this.state.data, draftState => {
-        const current_data = getNodeByIndexArr(drop_index_arr, draftState)
+        const drop_node_index = +drop_index_arr[drop_index_arr.length - 1]
+        // 直接添加到最后的情况下
+        let add_node_index = -1;
+        let add_target_index_arr = drop_index_arr
+        // 指定位置的情况下
+        if (this.drag_relative_index !== 0) {
+          add_node_index = drop_node_index + Math.max(this.drag_relative_index, 0)
+          // 同级向上拖的问题。先删掉会使计算的index多1
+          if (drag_index_arr.slice(0, -1).join() === drop_index_arr.slice(0, -1).join()) {
+            if (drag_index_arr[drag_index_arr.length - 1] < drop_index_arr[drop_index_arr.length - 1]) {
+              add_node_index -= 1
+            }
+            // add_node_index = drop_node_index + Math.min(this.drag_relative_index, 0)
+          }
+          add_target_index_arr = drop_index_arr.slice(0, -1)
+        }
+        const add_target = getNodeByIndexArr(add_target_index_arr, draftState)
+        // console.log(this.drag_relative_index, drop_index_arr, JSON.parse(JSON.stringify(add_target)), add_node_index)
+        console.log(drop_node_index, this.drag_relative_index, add_node_index)
+
         // 先删除
+        // console.log(drag_index_arr)
         const delete_node_index = drag_index_arr.pop()
+        const parent_data = getNodeByIndexArr(drag_index_arr, draftState)
+        // console.log(drag_index_arr, JSON.parse(JSON.stringify(parent_data)), delete_node_index)
         // 如果不是根节点
-
         if (drag_index_arr.length > 0) {
-          const parent_data = getNodeByIndexArr(drag_index_arr, draftState)
-
           if (!Array.isArray(parent_data.children)) {
             parent_data.children = []
           }
@@ -295,13 +351,25 @@ export default class Tree extends React.Component {
         } else {
           drag_data = draftState.splice(delete_node_index, 1)[0]
         }
+        console.log(JSON.parse(JSON.stringify(add_target)))
         // 再添加
-        console.log(drop_node_key, drop_index_arr)
-        if (!Array.isArray(current_data.children)) {
-          current_data.children = []
+        if (Array.isArray(add_target)) {
+          if (add_node_index === -1) {
+            draftState.push(drag_data)
+          } else {
+            draftState.splice(add_node_index, 0, drag_data)
+          }
+        } else {
+          if (!Array.isArray(add_target.children)) {
+            add_target.children = []
+          }
+          if (add_node_index === -1) {
+            add_target.children.push(drag_data)
+          } else {
+            add_target.children.splice(add_node_index, 0, drag_data)
+          }
+          add_target.state.isOpen = true
         }
-        current_data.children.push(drag_data)
-        current_data.state.isOpen = true
       })
       this.setState({
         data: new_data
@@ -356,6 +424,8 @@ export default class Tree extends React.Component {
                     isDraggable={isDraggable}
                     dragStart={this.dragStart}
                     dragEnd={this.dragEnd}
+                    dragEnter={this.dragEnter}
+                    dragOver={this.dragOver}
                     moveNode={this.moveNode}
           />
         </ul>

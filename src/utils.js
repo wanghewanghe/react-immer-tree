@@ -21,3 +21,14 @@ export const getNodeByIndexArr = (index_arr, data) => index_arr.reduce((result, 
 export const produceNewData = (key, prevData, func) => produce(prevData, draftState =>
   func(getNodeByIndexArr(key.split('-').slice(1), draftState))
 )
+
+export const getDropPosition = event => {
+  const { top, bottom, height } = event.target.getBoundingClientRect()
+  const { clientY } = event
+  if (clientY <= top + height * 0.3) {
+    return -1
+  } else if (clientY >= bottom - height * 0.3) {
+    return 1
+  }
+  return 0
+}
