@@ -14,6 +14,8 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
     moveNode,
     dragOver,
     dragEnter,
+    keyTextMap,
+    matchedKeys,
   } = others
   const treeNodeWrapClassnames = ({isOpen}) => classnames({
     'tree-node-wrap': true,
@@ -34,37 +36,41 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
   return data.map((node, idx) => {
     const key = `${parentKey}-${idx}`
     const hasChildren = node.children && node.children.length > 0
+    keyTextMap[key] = node.name
     return (
       <li key={key} className={treeNodeWrapClassnames(node.state)}>
-        <div className="tree-node">
-          {
-            hasChildren && !node.state.isDisabled ?
-            <i className="node-control" onClick={() => toggleNode(key)}/> :
-            <i style={{width: 20}} />
-          }
+        {
+          (matchedKeys.length ? matchedKeys.some(o => o === key) : true) &&
+          <div className="tree-node">
+            {
+              hasChildren && !node.state.isDisabled ?
+                <i className="node-control" onClick={() => toggleNode(key)}/> :
+                <i style={{width: 20}} />
+            }
 
-          <div className={nodeTextClassnames(node.state)}
-               data-key={key}
-               onClick={() => hasCheckbox && checkNode(key)}
-               draggable={!hasCheckbox && isDraggable}
-               onDragStart={dragStart}
-               onDragEnd={dragEnd}
-               onDragEnter={dragEnter}
-               onDragOver={dragOver}
-               onDragLeave={e => {
-                 e.target.style = ''
-               }}
-               onDrop={moveNode}
-          >
-            {node.name}{key}
-            {hasOperate && <i className="iconfont icon-menu"
-                              onClick={openMenu}
-                              onDragOver={e => e.stopPropagation()}
-            />}
-            {hasCheckbox && <i className="iconfont icon-round" />}
-            {hasCheckbox && node.state.isChecked && <i className="iconfont icon-roundcheckfill" />}
+            <div className={nodeTextClassnames(node.state)}
+                 data-key={key}
+                 onClick={() => hasCheckbox && checkNode(key)}
+                 draggable={!hasCheckbox && isDraggable}
+                 onDragStart={dragStart}
+                 onDragEnd={dragEnd}
+                 onDragEnter={dragEnter}
+                 onDragOver={dragOver}
+                 onDragLeave={e => {
+                   e.target.style = ''
+                 }}
+                 onDrop={moveNode}
+            >
+              <span>{node.name}</span>
+              {hasOperate && <i className="iconfont icon-menu"
+                                onClick={openMenu}
+                                onDragOver={e => e.stopPropagation()}
+              />}
+              {hasCheckbox && <i className="iconfont icon-round" />}
+              {hasCheckbox && node.state.isChecked && <i className="iconfont icon-roundcheckfill" />}
+            </div>
           </div>
-        </div>
+        }
 
         {
           hasChildren &&

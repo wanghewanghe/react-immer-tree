@@ -3,49 +3,10 @@ import TreeNode from "./TreeNode";
 import produce from 'immer'
 import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils";
 
-const data = [
-  {
-    name: '1-1text',
-    state: {
-      isOpen: true,
-    },
-    children: [
-      { name: '2-1text', id: 21 },
-      { name: "2-2text", id: 22 },
-      {
-        name: '2-3text', 
-        // children: [
-        //   {
-        //     name: '3-1text', children: [
-        //       { name: '4-1text' }
-        //     ]
-        //   },
-        //   { name: '3-2text' }
-        // ]
-      },
-      { name: "2-4text" },
-    ],
-  }, {
-    name: '1-2',
-    children: [
-      { name: '2-1text', id: 21 },
-      { name: "2-2text", id: 22 },
-      {
-        name: '2-3text', children: [
-          {
-            name: '3-1text', children: [
-              { name: '4-1text' }
-            ]
-          },
-          { name: '3-2text' }
-        ]
-      }
-    ],
-  }
-]
+const data = [{"name":"a","key":"0-0","children":[{"name":"b","key":"0-0-0"},{"name":"c","key":"0-0-1"},{"name":"d","key":"0-0-2"},{"name":"e","key":"0-0-3"},{"name":"c","key":"0-0-4"}]},{"name":"v","key":"0-1","children":[{"name":"g","key":"0-1-0"},{"name":"e","key":"0-1-1"},{"name":"q","key":"0-1-2","children":[{"name":"a","key":"0-1-2-0","children":[{"name":"o","key":"0-1-2-0-0"}]},{"name":"d","key":"0-1-2-1"}]}]}]
 
 const NODE_DEFAULT_STATE = {
-  isOpen: false,
+  isOpen: true,
   isDisabled: false,
   isChecked: false,
 }
@@ -92,14 +53,49 @@ export default class Tree extends React.Component {
     onChecked: () => {},
     onUnchecked: () => {},
   }
+  original_data = setDefaultState(data)
   state = {
-    data: setDefaultState(data),
+    data: this.original_data,
     selected: [],
     active_key: '',
+    no_search_data: false,
+    matched_keys: [],
   }
 
   drag_node_key = ''
   drag_relative_index = 0
+  keyTextMap = {}
+
+  componentDidMount() {
+    console.log(this.keyTextMap)
+  }
+
+  searchNode = e => {
+    if (e.keyCode === 13) {
+      if (e.target.value !== '') {
+        const matched_keys = Object.entries(this.keyTextMap).reduce((result, o) => {
+          if (o[1].includes(e.target.value)) {
+            o[0].split('-').reduce((key, index) => {
+              const res = key + '-' + index
+              result.push(res)
+              return res
+            })
+          }
+          return result
+        }, [])
+        // console.log(matched_keys)
+        this.setState({
+          matched_keys,
+          no_search_data: !matched_keys.length,
+        })
+      } else {
+        this.setState({
+          matched_keys: [],
+          no_search_data: false,
+        })
+      }
+    }
+  }
 
   addNode = (key) => {
     if (this.props.beforeAdd()) {
@@ -315,7 +311,7 @@ export default class Tree extends React.Component {
       const drag_index_arr = drag_node_key.split('-').slice(1)
       const drop_index_arr = drop_node_key.split('-').slice(1)
       let drag_data
-      
+
       const new_data = produce(this.state.data, draftState => {
         const drop_node_index = +drop_index_arr[drop_index_arr.length - 1]
         // 直接添加到最后的情况下
@@ -400,6 +396,8 @@ export default class Tree extends React.Component {
       data,
       selected,
       active_key,
+      no_search_data,
+      matched_keys,
     } = this.state
     const {
       hasOperate,
@@ -415,6 +413,8 @@ export default class Tree extends React.Component {
             )
           }
         </ul>
+        <input type="text" onKeyUp={this.searchNode}/>
+        {no_search_data && <p>没有匹配的对象</p>}
         <ul onClick={(e) => hasOperate && this.toggleActive(e)}>
           <TreeNode data={data}
                     toggleNode={this.toggleNode}
@@ -427,6 +427,8 @@ export default class Tree extends React.Component {
                     dragEnter={this.dragEnter}
                     dragOver={this.dragOver}
                     moveNode={this.moveNode}
+                    keyTextMap={this.keyTextMap}
+                    matchedKeys={matched_keys}
           />
         </ul>
         <ul className="operate-menu" onClick={e => e.stopPropagation()}>
