@@ -16,6 +16,7 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
     dragEnter,
     keyTextMap,
     matchedKeys,
+    nodeTypes,
   } = others
   const treeNodeWrapClassnames = ({isOpen}) => classnames({
     'tree-node-wrap': true,
@@ -45,7 +46,7 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
             {
               hasChildren && !node.state.isDisabled ?
                 <i className="node-control" onClick={() => toggleNode(key)}/> :
-                <i style={{width: 20}} />
+                <i style={{flex: 'none', width: 20}} />
             }
 
             <div className={nodeTextClassnames(node.state)}
@@ -61,7 +62,7 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
                  }}
                  onDrop={moveNode}
             >
-              <span>{node.name}</span>
+              <span>{nodeTypes[node.type]}{node.name}</span>
               {hasOperate && <i className="iconfont icon-menu"
                                 onClick={openMenu}
                                 onDragOver={e => e.stopPropagation()}
