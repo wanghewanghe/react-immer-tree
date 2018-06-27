@@ -8,7 +8,7 @@
   .tree-children {
     max-height: 0;
     overflow: hidden;
-    transition: max-height .4s;
+    transition: max-height .2s;
   }
 
   &.tree-node-open {

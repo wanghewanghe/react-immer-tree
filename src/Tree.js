@@ -433,7 +433,7 @@ export default class Tree extends React.Component {
   setCheckedState = (isChecked, data) => {
     data.state.isChecked = isChecked
     if (this.props.afterSelectNode === 'disabled') {
-      data.state.isOpen = !isChecked
+      data.state.isOpen = false
       data.state.isDisabled = isChecked
     }
   }
