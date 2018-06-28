@@ -1,11 +1,11 @@
 {
-  "name": "react-tree-component",
-  "version": "1.0.0",
+  "name": "react-immer-tree",
+  "version": "1.0.9",
   "description": "React Tree View Component",
   "main": "index.js",
   "scripts": {
-    "start": "parcel index.html",
-    "build": "NODE_ENV=production parcel build index.js"
+    "start": "parcel demo/index.html",
+    "build": "NODE_ENV=production parcel build src/Tree.js -d build"
   },
   "repository": {
     "type": "git",
@@ -13,7 +13,8 @@
   },
   "keywords": [
     "react",
-    "treeview"
+    "treeview",
+    "immer"
   ],
   "author": "Wange He",
   "license": "MIT",

@@ -2,6 +2,7 @@ import React from 'react'
 import TreeNode from "./TreeNode"
 import produce from 'immer'
 import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils"
+import './Tree.scss'
 
 const NODE_DEFAULT_STATE = {
   isOpen: false,

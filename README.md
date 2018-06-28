@@ -1,14 +1,15 @@
-# react-tree-component
+# react-immer-tree
 ***
 易配置、可定制、可勾选、可拖拽的React树组件
 ***
 
 ### 快速上手
-1. ```npm install react-tree-component```  
+1. ```npm install react-immer-tree```  
 2. ```
     import React from 'react'
     import ReactDOM from 'react-dom'
-    import Tree from 'react-tree-component'
+    import Tree from 'react-immer-tree'
+    import 'react-immer-tree/build/Tree.css'
     
     const data = [{
         name: 'a',
