@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-import { closeMenu } from "./utils";
+import { closeMenu } from "./utils"
 
 const TreeNode = ({ data, parentKey = 0, ...others }) => {
   const {

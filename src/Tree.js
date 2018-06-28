@@ -1,9 +1,7 @@
 import React from 'react'
-import TreeNode from "./TreeNode";
+import TreeNode from "./TreeNode"
 import produce from 'immer'
-import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils";
-
-let data = [{"name":"a","id": 1,"type": 1,"key":"0-0","children":[{"name":"b","id": 2,"type": 2,"key":"0-0-0"},{"name":"c","id": 3,"type": 2,"key":"0-0-1"},{"name":"d","id": 4,"type": 2,"key":"0-0-2"},{"name":"e","id": 5,"type": 2,"key":"0-0-3"},{"name":"c","id": 3,"type": 2,"key":"0-0-4"}]},{"name":"v","id": 6,"type": 1,"key":"0-1","children":[{"name":"g","id": 7,"type": 2,"key":"0-1-0"},{"name":"e","id": 5,"type": 2,"key":"0-1-1"},{"name":"q","id": 9,"type": 1,"key":"0-1-2","children":[{"name":"a","id": 1,"type": 1,"key":"0-1-2-0","children":[{"name":"o","id": 8,"type": 2,"key":"0-1-2-0-0"}]},{"name":"d","id": 4,"type": 2,"key":"0-1-2-1"}]}]}]
+import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils"
 
 const NODE_DEFAULT_STATE = {
   isOpen: false,
@@ -20,46 +18,28 @@ const setDefaultState = (data) => produce(data, draft => {
   })
 })
 
-/**
- * props list
- * propsName    | valueType | defaultValue | description
- * hasOperate     boolean     false        是否有操作菜单
- * hasCheckbox    boolean     false        是否有勾选
- * isCheckSameId  boolean     false        是否勾选相同id的项
- * isRadio        boolean     false        是否单选
- * isDraggable    boolean     false        是否拖拽
- * afterSelectNode String     'disabled'   选中父节点之后的效果（disabled：禁用并收起；all：如果有子节点则全选，one：只选中自身）
- * nodeTypes      object{typename: element} | {} | 不同type的节点对应的显示
- * onChecked      function                 选中后的回调
- * onUnchecked    function                 取消选中后的回调
- * beforeAdd      function                 菜单中添加子节点添加前的回调，需要返回true
- * onAdd          function                 菜单中添加子节点(返回值为子节点信息{name: xxx, state: xxx})
- * beforeDelete   function                 菜单中删除节点前的回调，需要返回true
- * beforeEdit     function                 菜单中修改名称前的回调，需要返回true
- * onEdit         function                 菜单中修改名称，返回编辑的子节点名字
- * resultNode     function                 返回每个勾选的节点信息，返回值为reactElement
- * noSearchData   function                 返回值reactElement--搜索不到数据时显示的内容
- **/
-
 export default class Tree extends React.Component {
   static defaultProps = {
+    data: [],
     afterSelectNode: 'disabled',
     hasOperate: false,
     hasCheckbox: false,
-    isCheckSameId: false,
+    hasSearch: false,
+    checkSameAttr: '',
     isRadio: false,
+    isDraggable: false,
     nodeTypes: {},
     beforeAdd: () => true,
     onAdd: () => ({}),
     beforeDelete: () => true,
     beforeEdit: () => true,
-    onEdit: () => {},
+    onEdit: () => 'edited name',
     onChecked: () => {},
     onUnchecked: () => {},
     resultNode: () => {},
     noSearchData: () => {},
   }
-  original_data = setDefaultState(data)
+  original_data = setDefaultState(this.props.data)
   state = {
     data: this.original_data,
     selected: [],
@@ -71,10 +51,6 @@ export default class Tree extends React.Component {
   drag_node_key = ''
   drag_relative_index = 0
   keyTextMap = {}
-
-  componentDidMount() {
-    console.log(this.keyTextMap)
-  }
 
   searchNode = e => {
     if (e.keyCode === 13) {
@@ -89,7 +65,7 @@ export default class Tree extends React.Component {
           }
           return result
         }, [])
-        // console.log(matched_keys)
+
         this.setState({
           matched_keys,
           no_search_data: !matched_keys.length,
@@ -148,7 +124,7 @@ export default class Tree extends React.Component {
 
   editNode = (key) => {
     if (this.props.beforeEdit()) {
-      const new_name = this.props.onEdit() || 'edited name'
+      const new_name = this.props.onEdit()
       const new_data = produceNewData(key, this.state.data, current_data => {
         current_data.name = new_name
       })
@@ -163,13 +139,19 @@ export default class Tree extends React.Component {
 
   checkNode = (key) => {
     const index_arr = key.split('-').slice(1)
+    const {
+      isRadio,
+      checkSameAttr,
+      afterSelectNode,
+      onChecked,
+    } = this.props
+    const current_ids = new Set()
     let { selected } = this.state
-    let current_ids = new Set()
     let is_current_checked
 
     let new_data = produce(this.state.data, draftState => {
       // 如果单选则先全部取消勾选
-      if (this.props.isRadio) {
+      if (isRadio) {
         const resetCheckedState = () => {
           recursiveTreeData(draftState)(o => {
             if (o.state.isChecked) {
@@ -184,7 +166,7 @@ export default class Tree extends React.Component {
       const current_data = getNodeByIndexArr(index_arr, draftState)
       if (!current_data.state.isChecked) {
         is_current_checked = false
-        current_ids.add(current_data.id)
+        current_ids.add(current_data[checkSameAttr])
         selected.push({
           ...current_data,
           state: { ...current_data.state },
@@ -193,20 +175,20 @@ export default class Tree extends React.Component {
         this.setCheckedState(true, current_data)
 
         // 全选
-        if (this.props.afterSelectNode === 'all') {
+        if (afterSelectNode === 'all') {
           if (Array.isArray(current_data.children)) {
             const checkAll = (data, key) => {
               data.children.forEach((o, i) => {
                 this.setCheckedState(true, o)
                 // 同级去重
-                if (!current_ids.has(o.id)) {
+                if (!current_ids.has(o[checkSameAttr])) {
                   selected.push({
                     ...o,
                     state: { ...o.state },
                     key: `${key}-${i}`
                   })
                 }
-                current_ids.add(o.id)
+                current_ids.add(o[checkSameAttr])
                 if (Array.isArray(o.children)) {
                   checkAll(o, `${key}-${i}`)
                 }
@@ -216,21 +198,21 @@ export default class Tree extends React.Component {
           }
         }
 
-      } else if (this.props.afterSelectNode !== 'disabled') {
+      } else if (afterSelectNode !== 'disabled') {
         // 非选中后禁用才可以再次点击取消勾选
         is_current_checked = true
-        current_ids.add(current_data.id)
+        current_ids.add(current_data[checkSameAttr])
         selected = selected.filter(o => o.key !== `result${key}`)
         this.setCheckedState(false, current_data)
 
         // 全反选
-        if (this.props.afterSelectNode === 'all') {
+        if (afterSelectNode === 'all') {
           if (Array.isArray(current_data.children)) {
             const unCheckAll = (data, key) => {
               data.children.forEach((o, i) => {
                 this.setCheckedState(false, o)
                 selected = selected.filter(o => o.key !== `${key}-${i}`)
-                current_ids.add(o.id)
+                current_ids.add(o[checkSameAttr])
                 if (Array.isArray(o.children)) {
                   unCheckAll(o, `${key}-${i}`)
                 }
@@ -242,7 +224,7 @@ export default class Tree extends React.Component {
       }
     })
     // 勾选相同id的节点
-    if (this.props.isCheckSameId) {
+    if (checkSameAttr) {
       new_data = produce(new_data, draftState => {
         recursiveTreeData(draftState)(node => {
           this.setSameIdChecked(!is_current_checked, node, current_ids)
@@ -250,7 +232,7 @@ export default class Tree extends React.Component {
       })
     }
 
-    this.props.onChecked(selected)
+    onChecked(selected)
 
     this.setState({
       data: new_data,
@@ -261,18 +243,22 @@ export default class Tree extends React.Component {
   unCheckNode = (key, index) => {
     const index_arr = key.replace('result', '').split('-').slice(1)
     const { selected } = this.state
-    let current_ids = new Set()
+    const {
+      checkSameAttr,
+      onUnchecked,
+    } = this.props
+    const current_ids = new Set()
 
     let new_data = produce(this.state.data, draftState => {
       const current_data = getNodeByIndexArr(index_arr, draftState)
       if (current_data.state.isChecked) {
         selected.splice(index, 1)
-        current_ids.add(current_data.id)
+        current_ids.add(current_data[checkSameAttr])
         this.setCheckedState(false, current_data)
       }
     })
 
-    if (this.props.isCheckSameId) {
+    if (checkSameAttr) {
       new_data = produce(new_data, draftState => {
         recursiveTreeData(draftState)(o => {
           this.setSameIdChecked(false, o, current_ids)
@@ -280,7 +266,7 @@ export default class Tree extends React.Component {
       })
     }
 
-    this.props.onUnchecked(selected)
+    onUnchecked(selected)
 
     this.setState({
       data: new_data,
@@ -367,7 +353,7 @@ export default class Tree extends React.Component {
       const new_data = produce(this.state.data, draftState => {
         const drop_node_index = +drop_index_arr[drop_index_arr.length - 1]
         // 直接添加到最后的情况下
-        let add_node_index = -1;
+        let add_node_index = -1
         let add_target_index_arr = drop_index_arr
         // 指定位置的情况下
         if (this.drag_relative_index !== 0) {
@@ -383,7 +369,7 @@ export default class Tree extends React.Component {
         }
         const add_target = getNodeByIndexArr(add_target_index_arr, draftState)
         // console.log(this.drag_relative_index, drop_index_arr, JSON.parse(JSON.stringify(add_target)), add_node_index)
-        console.log(drop_node_index, this.drag_relative_index, add_node_index)
+        // console.log(drop_node_index, this.drag_relative_index, add_node_index)
 
         // 先删除
         // console.log(drag_index_arr)
@@ -399,7 +385,7 @@ export default class Tree extends React.Component {
         } else {
           drag_data = draftState.splice(delete_node_index, 1)[0]
         }
-        console.log(JSON.parse(JSON.stringify(add_target)))
+        // console.log(JSON.parse(JSON.stringify(add_target)))
         // 再添加
         if (Array.isArray(add_target)) {
           if (add_node_index === -1) {
@@ -439,7 +425,8 @@ export default class Tree extends React.Component {
   }
 
   setSameIdChecked = (isChecked, data, selected_ids) => {
-    if (data.id && selected_ids.has(data.id)) {
+    const attr = this.props.checkSameAttr
+    if (data[attr] && selected_ids.has(data[attr])) {
       this.setCheckedState(isChecked, data)
     }
   }
@@ -460,10 +447,13 @@ export default class Tree extends React.Component {
     } = this.props
     return (
       <div className="tree-wrap" onClick={this.handleWrapClick}>
-        <div className="search-group">
-          <input className="search-input" type="text" onKeyUp={this.searchNode}/>
-          {no_search_data && (this.props.noSearchData() || <p>没有匹配的对象</p>)}
-        </div>
+        {
+          this.props.hasSearch &&
+          <div className="search-group">
+            <input className="search-input" type="text" onKeyUp={this.searchNode}/>
+            {no_search_data && (this.props.noSearchData() || <p>没有匹配的对象</p>)}
+          </div>
+        }
         <ul onClick={(e) => hasOperate && this.toggleActive(e)}>
           <TreeNode data={data}
                     toggleNode={this.toggleNode}
@@ -481,26 +471,32 @@ export default class Tree extends React.Component {
                     nodeTypes={nodeTypes}
           />
         </ul>
-        <ul className="selected-result-list">selected result:
-          {
-            selected.map((o, i) =>
-              <li className="result-node" key={o.key} onClick={() => this.unCheckNode(o.key, i)}>
-                {
-                  this.props.resultNode(o) ||
-                  <span>
+        {
+          this.props.afterSelectNode === 'disabled' &&
+          <ul className="selected-result-list">selected result:
+            {
+              selected.map((o, i) =>
+                <li className="result-node" key={o.key} onClick={() => this.unCheckNode(o.key, i)}>
+                  {
+                    this.props.resultNode(o) ||
+                    <span>
                     {nodeTypes[o.type]}{o.name}
-                    <b style={{float: 'right'}}>&times;</b>
+                      <b style={{float: 'right'}}>&times;</b>
                   </span>
-                }
-              </li>
-            )
-          }
-        </ul>
-        <ul className="operate-menu" onClick={e => e.stopPropagation()}>
-          <li onClick={() => this.addNode(active_key)}>添加子部门</li>
-          <li onClick={() => this.editNode(active_key)}>修改名称</li>
-          <li onClick={() => this.deleteNode(active_key)}>删除</li>
-        </ul>
+                  }
+                </li>
+              )
+            }
+          </ul>
+        }
+        {
+          this.props.hasOperate &&
+          <ul className="operate-menu" onClick={e => e.stopPropagation()}>
+            <li onClick={() => this.addNode(active_key)}>添加子节点</li>
+            <li onClick={() => this.editNode(active_key)}>修改名称</li>
+            <li onClick={() => this.deleteNode(active_key)}>删除</li>
+          </ul>
+        }
       </div>
     )
   }
