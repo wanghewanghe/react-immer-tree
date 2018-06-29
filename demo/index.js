@@ -7,7 +7,7 @@ const data = [{"name":"a","id": 1,"type": 1,"children":[{"name":"b","id": 2,"typ
 
 ReactDOM.render(
   <div>
-    <Tree data={data} hasCheckbox isRadio checkSameAttr="id" afterSelectNode="one" onChecked={console.log} nodeTypes={{1: <i className="iconfont icon-bumen"/>, 2: <i className="iconfont icon-profilefill"/> }}/>
-    {/*<Tree data={data} hasOperate isDraggable/>*/}
+    {/*<Tree data={data} hasCheckbox isRadio checkSameAttr="id" afterSelectNode="one" onChecked={console.log} nodeTypes={{1: <i className="iconfont icon-bumen"/>, 2: <i className="iconfont icon-profilefill"/> }}/>*/}
+    <Tree data={data} hasOperate isDraggable onDrop={console.log} nodeTypes={{1: <i className="iconfont icon-bumen"/>, 2: <i className="iconfont icon-profilefill"/> }}/>
   </div>,
   document.getElementById('app'))

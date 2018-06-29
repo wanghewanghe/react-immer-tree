@@ -1,7 +1,10 @@
 import React from 'react'
 import TreeNode from "./TreeNode"
 import produce from 'immer'
-import { closeMenu, getDropPosition, getNodeByIndexArr, produceNewData, recursiveTreeData } from "./utils"
+import {
+  closeMenu, getDropPosition, getDropTarget, getNodeByIndexArr, produceNewData,
+  recursiveTreeData
+} from "./utils"
 import './Tree.scss'
 
 const NODE_DEFAULT_STATE = {
@@ -37,6 +40,7 @@ export default class Tree extends React.Component {
     onEdit: () => 'edited name',
     onChecked: () => {},
     onUnchecked: () => {},
+    onDrop: () => {},
     resultNode: () => {},
     noSearchData: () => {},
   }
@@ -314,13 +318,13 @@ export default class Tree extends React.Component {
   }
 
   dragEnd = event => {
-    event.target.style = ''
+    getDropTarget('node-text', event.target).style = ''
     this.drag_node_key = ''
   }
 
   dragEnter = event => {
     event.preventDefault()
-    const new_data = produceNewData(event.target.getAttribute('data-key'), this.state.data, current_data => {
+    const new_data = produceNewData(getDropTarget('node-text', event.target).getAttribute('data-key'), this.state.data, current_data => {
       current_data.state.isOpen = true
     })
     this.setState({
@@ -330,7 +334,7 @@ export default class Tree extends React.Component {
 
   dragOver = event => {
     event.preventDefault()
-    const { style } = event.target
+    const { style } = getDropTarget('node-text', event.target)
     const relative_index = getDropPosition(event)
     if (relative_index === 1) {
       style.borderBottom = '2px solid #1890ff'
@@ -343,9 +347,10 @@ export default class Tree extends React.Component {
   }
 
   moveNode = event => {
-    event.target.style = ''
+    const $drop_target = getDropTarget('node-text', event.target)
+    $drop_target.style = ''
     const drag_node_key = this.drag_node_key
-    const drop_node_key = event.target.getAttribute('data-key')
+    const drop_node_key = $drop_target.getAttribute('data-key')
     if (drag_node_key !== drop_node_key) {
       const drag_index_arr = drag_node_key.split('-').slice(1)
       const drop_index_arr = drop_node_key.split('-').slice(1)
@@ -406,6 +411,8 @@ export default class Tree extends React.Component {
           add_target.state.isOpen = true
         }
       })
+
+      this.props.onDrop(new_data)
       this.setState({
         data: new_data
       })
@@ -473,7 +480,7 @@ export default class Tree extends React.Component {
           />
         </ul>
         {
-          this.props.afterSelectNode === 'disabled' &&
+          this.props.hasCheckbox && this.props.afterSelectNode === 'disabled' &&
           <ul className="selected-result-list">selected result:
             {
               selected.map((o, i) =>
