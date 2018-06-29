@@ -2,7 +2,7 @@ import React from 'react'
 import TreeNode from "./TreeNode"
 import produce from 'immer'
 import {
-  closeMenu, getDropPosition, getDropTarget, getNodeByIndexArr, produceNewData,
+  closeMenu, getDropPosition, getEventTargetByClass, getNodeByIndexArr, produceNewData,
   recursiveTreeData
 } from "./utils"
 import './Tree.scss'
@@ -289,8 +289,8 @@ export default class Tree extends React.Component {
   }
 
   toggleActive = (event) => {
-    const { target } = event
-    if (target.className === 'node-text') {
+    const target = getEventTargetByClass('node-text', event.target)
+    if (target) {
       const $activeNode = document.querySelector('.node-text.active')
       if ($activeNode) {
         $activeNode.className = 'node-text'
@@ -318,36 +318,45 @@ export default class Tree extends React.Component {
   }
 
   dragEnd = event => {
-    getDropTarget('node-text', event.target).style = ''
+    const $node_text = getEventTargetByClass('node-text', event.target)
+    if ($node_text) {
+      $node_text.style = ''
+    }
     this.drag_node_key = ''
   }
 
   dragEnter = event => {
     event.preventDefault()
-    const new_data = produceNewData(getDropTarget('node-text', event.target).getAttribute('data-key'), this.state.data, current_data => {
-      current_data.state.isOpen = true
-    })
-    this.setState({
-      data: new_data
-    })
+    const $node_text = getEventTargetByClass('node-text', event.target)
+    if ($node_text) {
+      const new_data = produceNewData($node_text.getAttribute('data-key'), this.state.data, current_data => {
+        current_data.state.isOpen = true
+      })
+      this.setState({
+        data: new_data
+      })
+    }
   }
 
   dragOver = event => {
     event.preventDefault()
-    const { style } = getDropTarget('node-text', event.target)
-    const relative_index = getDropPosition(event)
-    if (relative_index === 1) {
-      style.borderBottom = '2px solid #1890ff'
-    } else if (relative_index === -1) {
-      style.borderTop = '2px solid #1890ff'
-    } else {
-      style.background = '#1890ff'
+    const $node_text = getEventTargetByClass('node-text', event.target)
+    if ($node_text) {
+      const { style } = $node_text
+      const relative_index = getDropPosition(event)
+      if (relative_index === 1) {
+        style.borderBottom = '2px solid #1890ff'
+      } else if (relative_index === -1) {
+        style.borderTop = '2px solid #1890ff'
+      } else {
+        style.background = '#1890ff'
+      }
+      this.drag_relative_index = relative_index
     }
-    this.drag_relative_index = relative_index
   }
 
   moveNode = event => {
-    const $drop_target = getDropTarget('node-text', event.target)
+    const $drop_target = getEventTargetByClass('node-text', event.target)
     $drop_target.style = ''
     const drag_node_key = this.drag_node_key
     const drop_node_key = $drop_target.getAttribute('data-key')

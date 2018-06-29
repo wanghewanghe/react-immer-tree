@@ -1,6 +1,6 @@
 {
   "name": "react-immer-tree",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Easy to configure, customisable React tree component. Support drag and drop, check, search, etc.",
   "main": "index.js",
   "scripts": {

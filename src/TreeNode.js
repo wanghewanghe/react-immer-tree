@@ -1,6 +1,6 @@
 import React from 'react'
 import classnames from 'classnames'
-import { closeMenu, getDropTarget } from "./utils"
+import { closeMenu, getEventTargetByClass } from "./utils"
 
 const TreeNode = ({ data, parentKey = 0, ...others }) => {
   const {
@@ -58,7 +58,10 @@ const TreeNode = ({ data, parentKey = 0, ...others }) => {
                  onDragEnter={dragEnter}
                  onDragOver={dragOver}
                  onDragLeave={e => {
-                   getDropTarget('node-text', e.target).style = ''
+                   const $node_text = getEventTargetByClass('node-text', e.target)
+                   if ($node_text) {
+                     $node_text.style = ''
+                   }
                  }}
                  onDrop={moveNode}
             >

@@ -33,10 +33,13 @@ export const getDropPosition = event => {
   return 0
 }
 
-export const getDropTarget = (classname, target) => {
+export const getEventTargetByClass = (classname, target) => {
+  if (!target) {
+    return
+  }
   if (target.classList.contains(classname)) {
     return target
   } else {
-    return getDropTarget(classname, target.parentElement)
+    return getEventTargetByClass(classname, target.parentElement)
   }
 }
